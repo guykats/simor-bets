@@ -539,14 +539,19 @@ function buildBetBlock(round, name, players) {
 
   let inner = '';
 
+  // אם הימור נשלח/אושר — קרא מה-DB; אחרת קרא מהטיוטה המקומית
+  const submitted = (isPending || isApproved);
+
   if (round.type === 'champion') {
-    const sel = get('draft_' + name + '_champion', null);
+    const sel = submitted
+      ? get('submitted_' + name + '_champion', null)
+      : get('draft_' + name + '_champion', null);
     if (!players.length) {
       inner = '<div style="color:var(--muted);font-style:italic;font-size:15px;">ממתין לשחקנים...</div>';
     } else {
       inner = `<div class="champ-grid">${players.map(p => `
-        <div class="champ-card ${sel === p ? 'selected' : ''} ${locked ? 'disabled' : ''}"
-             onclick="${locked ? "toast('הימור נעול!',true)" : `toggleChampion('${p}')`}">
+        <div class="champ-card ${sel === p ? 'selected' : ''} ${locked || submitted ? 'disabled' : ''}"
+             onclick="${locked || submitted ? '' : `toggleChampion('${p}')`}">
           ${p}</div>`).join('')}</div>`;
     }
   } else {
@@ -555,8 +560,9 @@ function buildBetBlock(round, name, players) {
       ? (get('final_matchup', []).length ? [get('final_matchup', [])] : [])
       : get(round.key + '_matchups', []);
     const winners = get(round.key + '_winners', []);
-    const draftKey = 'draft_' + name + '_' + round.key;
-    const myBets = get(draftKey, {});
+    const myBets = submitted
+      ? get('submitted_' + name + '_' + round.key, {})
+      : get('draft_' + name + '_' + round.key, {});
 
     if (!matchups.length) {
       inner = '<div style="color:var(--muted);font-style:italic;font-size:15px;">ממתין לנתוני הסיבוב...</div>';
@@ -568,17 +574,18 @@ function buildBetBlock(round, name, players) {
           const w = winners[i] || '';
           const c1 = w ? (w === p1 ? 'sel' : 'lost') : (sel === p1 ? 'sel' : '');
           const c2 = w ? (w === p2 ? 'sel' : 'lost') : (sel === p2 ? 'sel' : '');
+          const disabled = locked || w || submitted;
           return `<div class="match-card">
             <div class="match-num">משחק ${i + 1}</div>
-            <div class="match-player ${c1} ${locked || w ? 'disabled' : ''}"
-                 onclick="${locked || w ? '' : `toggleMatchBet('${round.key}',${i},'${p1}')`}">
+            <div class="match-player ${c1} ${disabled ? 'disabled' : ''}"
+                 onclick="${disabled ? '' : `toggleMatchBet('${round.key}',${i},'${p1}')`}">
               <span>${p1}</span>
               ${sel === p1 && !w ? '<span class="badge">✓</span>' : ''}
               ${w === p1 ? '<span>👑</span>' : ''}
             </div>
             <div class="vs-sep">VS</div>
-            <div class="match-player ${c2} ${locked || w ? 'disabled' : ''}"
-                 onclick="${locked || w ? '' : `toggleMatchBet('${round.key}',${i},'${p2}')`}">
+            <div class="match-player ${c2} ${disabled ? 'disabled' : ''}"
+                 onclick="${disabled ? '' : `toggleMatchBet('${round.key}',${i},'${p2}')`}">
               <span>${p2}</span>
               ${sel === p2 && !w ? '<span class="badge">✓</span>' : ''}
               ${w === p2 ? '<span>👑</span>' : ''}
