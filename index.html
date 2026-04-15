@@ -1,11 +1,1134 @@
 <!DOCTYPE html>
-<html lang="he">
+<html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simor Bets</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>שש-בסימור</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IM+Fell+English:ital@0;1&family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0d0b0a; --ink2:#161310; --ink3:#1f1b18;
+  --red:#9b2226; --red2:#ae2012; --red-glow:rgba(155,34,38,0.35);
+  --gold:#b8860b; --gold2:#d4a017; --gold3:#e8c547;
+  --cream:#f5edd8; --muted:#6b5d4f; --muted2:#8a7a6a;
+  --border:#2e2620; --border2:#3d3028;
+  --green:#2d6a4f; --green2:#40916c;
+  --surface:rgba(30,24,18,0.95); --surface2:rgba(40,32,24,0.9);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--ink);color:var(--cream);font-family:'Cormorant Garamond',serif;min-height:100vh;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.5;}
+
+/* ── HEADER ── */
+.site-header{position:relative;padding:50px 20px 36px;text-align:center;overflow:hidden;border-bottom:1px solid var(--border2);}
+.site-header::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:700px;height:450px;background:radial-gradient(ellipse at center top,rgba(155,34,38,0.15) 0%,transparent 70%);pointer-events:none;}
+.site-header::after{content:'';position:absolute;inset:14px;border:1px solid rgba(184,134,11,0.1);pointer-events:none;}
+.wolf-logo-wrap{display:inline-block;margin-bottom:20px;filter:drop-shadow(0 0 32px rgba(155,34,38,0.55)) drop-shadow(0 0 12px rgba(184,134,11,0.25));animation:floatLogo 5s ease-in-out infinite;}
+@keyframes floatLogo{0%,100%{transform:translateY(0) rotate(-1deg);}50%{transform:translateY(-10px) rotate(1deg);}}
+.wolf-svg{width:210px;height:210px;}
+.site-title{font-family:'Playfair Display',serif;font-size:clamp(50px,10vw,104px);font-weight:900;color:var(--cream);letter-spacing:-3px;line-height:0.88;text-shadow:0 0 80px rgba(155,34,38,0.45),0 3px 0 rgba(0,0,0,0.6);margin-bottom:10px;}
+.site-tagline{font-family:'IM Fell English',serif;font-style:italic;font-size:20px;color:var(--gold2);letter-spacing:1px;}
+.dice-orn{margin:16px 0 0;display:flex;align-items:center;justify-content:center;gap:12px;color:var(--muted2);font-size:22px;}
+.dice-orn .line{flex:1;max-width:130px;height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);}
+.dice-orn span{animation:rollDice 8s ease-in-out infinite;display:inline-block;}
+.dice-orn span:nth-child(3){animation-delay:-2.5s;}
+.dice-orn span:nth-child(5){animation-delay:-5s;}
+@keyframes rollDice{0%,80%,100%{transform:rotate(0);}85%{transform:rotate(-20deg);}90%{transform:rotate(20deg);}95%{transform:rotate(-10deg);}}
+
+/* ── NAV ── */
+.nav-bar{display:flex;justify-content:center;padding:0 20px;border-bottom:1px solid var(--border2);position:sticky;top:0;background:rgba(13,11,10,0.97);backdrop-filter:blur(10px);z-index:200;gap:0;}
+.nav-tab{padding:16px 28px;font-family:'Bebas Neue';font-size:17px;letter-spacing:3px;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all 0.2s;position:relative;top:1px;white-space:nowrap;}
+.nav-tab:hover{color:var(--cream);}
+.nav-tab.active{color:var(--gold3);border-bottom-color:var(--gold3);}
+
+/* ── MAIN ── */
+.main{padding:36px 20px 80px;max-width:1100px;margin:0 auto;}
+.page{display:none;}
+.page.active{display:block;animation:fadeIn 0.3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sec-head{display:flex;align-items:center;gap:14px;font-family:'Playfair Display',serif;font-size:26px;color:var(--cream);margin-bottom:20px;margin-top:32px;}
+.sec-head:first-child{margin-top:0;}
+.sec-head .orn{color:var(--gold2);font-size:18px;}
+.sec-head::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border2),transparent);}
+
+/* ── BETTOR BAR ── */
+.bettor-bar{background:var(--surface2);border:1px solid var(--border2);border-radius:14px;padding:18px 24px;margin-bottom:30px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.bettor-bar label{font-family:'Bebas Neue';font-size:16px;letter-spacing:2px;color:var(--gold2);white-space:nowrap;}
+.bettor-bar input{flex:1;min-width:200px;background:rgba(13,11,10,0.8);border:1px solid var(--border2);border-radius:8px;padding:10px 16px;color:var(--cream);font-family:'Cormorant Garamond';font-size:18px;outline:none;transition:border-color 0.2s;}
+.bettor-bar input:focus{border-color:var(--gold2);}
+
+/* ── BET BLOCK (one per bet type) ── */
+.bet-block{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:22px 22px 18px;margin-bottom:20px;position:relative;}
+.bet-block-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.bet-block-title{font-family:'Bebas Neue';font-size:17px;letter-spacing:2px;color:var(--gold2);}
+.bet-block-status{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+
+/* Lock pill */
+.lock-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:12px;font-family:'Bebas Neue';font-size:12px;letter-spacing:1px;white-space:nowrap;}
+.lock-pill.locked{background:rgba(155,34,38,0.18);border:1px solid rgba(155,34,38,0.4);color:#e07070;}
+.lock-pill.open{background:rgba(45,106,79,0.18);border:1px solid rgba(64,145,108,0.4);color:#7ddeaa;}
+
+/* Status tags */
+.ptag{display:inline-block;font-family:'Bebas Neue';font-size:11px;letter-spacing:1px;background:rgba(155,34,38,0.2);border:1px solid rgba(155,34,38,0.4);color:#e07070;padding:2px 8px;border-radius:4px;}
+.atag{display:inline-block;font-family:'Bebas Neue';font-size:11px;letter-spacing:1px;background:rgba(45,106,79,0.2);border:1px solid rgba(64,145,108,0.4);color:#7ddeaa;padding:2px 8px;border-radius:4px;}
+
+/* Champion grid inside block */
+.champ-grid{display:flex;flex-wrap:wrap;gap:9px;}
+.champ-card{background:var(--ink3);border:1px solid var(--border2);border-radius:9px;padding:10px 16px;cursor:pointer;transition:all 0.2s;font-size:16px;font-weight:600;}
+.champ-card:hover{border-color:var(--gold2);transform:translateY(-2px);}
+.champ-card.selected{border-color:var(--gold3);background:rgba(184,134,11,0.12);color:var(--gold3);}
+.champ-card.disabled{opacity:0.35;cursor:not-allowed;transform:none!important;}
+
+/* Match cards grid */
+.round-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:4px;}
+.match-card{background:var(--ink3);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+.match-num{font-family:'Bebas Neue';font-size:11px;letter-spacing:2px;color:var(--gold2);margin-bottom:8px;}
+.match-player{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border-radius:7px;background:rgba(13,11,10,0.6);border:1px solid transparent;cursor:pointer;transition:all 0.18s;font-size:17px;color:var(--cream);}
+.match-player:hover:not(.sel):not(.lost){border-color:var(--muted2);}
+.match-player.sel{background:rgba(45,106,79,0.15);border-color:var(--green2);color:#7ddeaa;}
+.match-player.lost{opacity:0.35;text-decoration:line-through;}
+.match-player .badge{font-family:'Bebas Neue';font-size:11px;letter-spacing:1px;color:var(--green2);background:rgba(64,145,108,0.15);padding:2px 7px;border-radius:4px;}
+.match-player.disabled{cursor:not-allowed;}
+.vs-sep{text-align:center;font-family:'Bebas Neue';font-size:11px;color:var(--muted);letter-spacing:3px;padding:2px 0;}
+
+/* Submit button per block */
+.block-submit-btn{margin-top:14px;width:100%;background:linear-gradient(135deg,var(--red2),#6b1210);color:var(--cream);border:none;padding:13px 30px;font-family:'Bebas Neue';font-size:20px;letter-spacing:3px;border-radius:10px;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 20px var(--red-glow);}
+.block-submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px var(--red-glow);}
+.block-submit-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none;}
+.block-locked-msg{margin-top:12px;text-align:center;color:#e07070;font-style:italic;font-size:15px;padding:8px;}
+
+/* ══════════════════════════════════
+   BRACKET TREE — top-down
+══════════════════════════════════ */
+.bracket-scroll{overflow-x:auto;padding-bottom:20px;}
+
+/* Each row is a round; rows stack top→bottom */
+.b-tree{display:flex;flex-direction:column;gap:0;min-width:900px;}
+
+.b-row{display:flex;flex-direction:column;padding:0 0 32px;}
+.b-row-head{font-family:'Bebas Neue';font-size:13px;letter-spacing:3px;color:var(--gold2);text-align:center;padding:10px 0 16px;border-bottom:1px solid rgba(184,134,11,0.2);margin-bottom:20px;}
+
+/* The matches in a row sit in a centered flex line */
+.b-row-matches{display:flex;justify-content:space-around;align-items:flex-start;gap:12px;position:relative;}
+
+/* Connector lines: after each match draw lines going down to the children */
+.b-match-wrap{display:flex;flex-direction:column;align-items:center;position:relative;}
+
+/* Vertical line going down from a match toward the next row */
+.b-match-wrap::after{
+  content:'';
+  position:absolute;
+  bottom:-32px; left:50%;
+  width:1px; height:32px;
+  background:linear-gradient(180deg,var(--border2),transparent);
+}
+
+/* For final match and champion, no line below */
+.b-match-wrap.no-line::after{display:none;}
+
+/* Horizontal bridge: between sibling pairs pointing to their parent */
+.b-bridge{
+  position:absolute;
+  top:-16px;
+  height:1px;
+  background:var(--border2);
+}
+
+.b-match{background:var(--surface);border:1px solid var(--border2);border-radius:10px;overflow:hidden;min-width:150px;max-width:200px;width:100%;}
+.b-player{padding:9px 12px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:6px;border-bottom:1px solid var(--border);}
+.b-player:last-child{border-bottom:none;}
+.b-player.winner{background:rgba(45,106,79,0.2);color:#7ddeaa;}
+.b-player.loser{opacity:0.35;}
+.b-player .pn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+.b-champion-wrap{display:flex;justify-content:center;padding-top:10px;}
+.b-champion{background:linear-gradient(135deg,rgba(184,134,11,0.18),rgba(155,34,38,0.08));border:1px solid rgba(184,134,11,0.45);border-radius:16px;padding:20px 28px;text-align:center;min-width:160px;}
+.b-champ-lbl{font-family:'Bebas Neue';font-size:12px;letter-spacing:3px;color:var(--gold2);margin-bottom:8px;}
+.b-champ-name{font-family:'Playfair Display';font-size:20px;color:var(--gold3);font-weight:700;}
+.b-trophy{font-size:32px;display:block;margin-bottom:8px;}
+
+/* ── LEADERBOARD ── */
+.lb-table{width:100%;border-collapse:collapse;font-size:17px;}
+.lb-table th{font-family:'Bebas Neue';font-size:13px;letter-spacing:2px;color:var(--gold2);text-align:right;padding:12px 16px;border-bottom:1px solid var(--border2);}
+.lb-table td{padding:14px 16px;border-bottom:1px solid rgba(46,38,32,0.5);vertical-align:middle;}
+.lb-table tr.r1 td{background:rgba(184,134,11,0.06);}
+.rank{font-family:'Bebas Neue';font-size:22px;}
+.score-bw{display:flex;align-items:center;gap:10px;}
+.score-bar{height:5px;border-radius:3px;background:linear-gradient(90deg,var(--red),var(--gold2));min-width:4px;}
+
+/* ── ADMIN ── */
+.admin-card{background:var(--surface2);border:1px solid var(--border2);border-radius:14px;padding:24px;margin-bottom:22px;}
+.admin-card h3{font-family:'Bebas Neue';font-size:20px;letter-spacing:2px;color:var(--gold2);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+.ai{background:rgba(13,11,10,0.9);border:1px solid var(--border2);border-radius:8px;padding:9px 13px;color:var(--cream);font-family:'Cormorant Garamond';font-size:17px;outline:none;width:100%;transition:border-color 0.2s;}
+.ai:focus{border-color:var(--gold2);}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px;margin-bottom:16px;}
+.prow{display:flex;align-items:center;gap:8px;}
+.pnum{font-family:'Bebas Neue';font-size:16px;color:var(--muted2);min-width:24px;}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mrow{display:flex;align-items:center;gap:8px;background:rgba(13,11,10,0.7);padding:10px 14px;border-radius:8px;border:1px solid var(--border);}
+.mlbl{font-family:'Bebas Neue';font-size:12px;letter-spacing:1px;color:var(--gold2);min-width:28px;}
+.msel{flex:1;background:var(--ink3);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--cream);font-family:'Cormorant Garamond';font-size:16px;outline:none;cursor:pointer;}
+.mvs{font-family:'Bebas Neue';font-size:12px;color:var(--muted);letter-spacing:2px;}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.rrow{display:flex;align-items:center;gap:10px;background:rgba(13,11,10,0.7);padding:10px 14px;border-radius:8px;border:1px solid var(--border);flex-wrap:wrap;}
+.rlbl{font-family:'Bebas Neue';font-size:13px;letter-spacing:1px;color:var(--gold2);min-width:55px;}
+.rsel{flex:1;min-width:120px;background:var(--ink3);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--cream);font-family:'Cormorant Garamond';font-size:16px;outline:none;cursor:pointer;}
+.abtn{padding:10px 22px;font-family:'Bebas Neue';font-size:17px;letter-spacing:2px;border-radius:8px;cursor:pointer;transition:all 0.2s;border:1px solid var(--border2);background:var(--ink3);color:var(--cream);margin:0 4px 4px 0;}
+.abtn:hover{border-color:var(--gold2);color:var(--gold2);}
+.abtn.primary{border-color:var(--red);background:rgba(155,34,38,0.2);color:var(--cream);}
+.abtn.primary:hover{background:rgba(155,34,38,0.4);}
+.abtn.success{border-color:var(--green2);background:rgba(45,106,79,0.2);color:#7ddeaa;}
+.abtn.success:hover{background:rgba(45,106,79,0.35);}
+.abtn.danger{border-color:rgba(155,34,38,0.4);}
+.abtn.danger:hover{border-color:var(--red);color:#e07070;}
+.abtn.sm{padding:7px 14px;font-size:14px;}
+
+/* Per-round lock row in admin */
+.round-lock-row{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:rgba(13,11,10,0.7);border-radius:10px;border:1px solid var(--border);margin-bottom:8px;flex-wrap:wrap;gap:10px;}
+.rll-info strong{font-family:'Bebas Neue';font-size:16px;letter-spacing:2px;color:var(--cream);display:block;margin-bottom:2px;}
+.rll-info span{font-size:13px;color:var(--muted2);}
+
+/* Pending list */
+.plist{display:flex;flex-direction:column;gap:10px;}
+.pitem{background:rgba(13,11,10,0.8);border:1px solid var(--border2);border-radius:10px;padding:14px 18px;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;}
+.pitem .piname{font-family:'Playfair Display';font-size:18px;font-weight:700;color:var(--cream);flex:1;min-width:120px;}
+.pitem .pibets{font-size:14px;color:var(--muted2);flex:100%;margin-top:4px;line-height:2;}
+.pitem .piacts{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
+
+/* Toast */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--surface2);border:1px solid var(--green2);border-radius:12px;padding:13px 28px;font-family:'Bebas Neue';font-size:17px;letter-spacing:2px;color:#7ddeaa;z-index:9999;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.err{border-color:var(--red);color:#e07070;}
+
+@media(max-width:700px){
+  .round-grid,.mgrid,.rgrid{grid-template-columns:1fr;}
+  .nav-tab{padding:12px 10px;font-size:13px;letter-spacing:1px;}
+  .wolf-svg{width:160px;height:160px;}
+  .site-title{letter-spacing:-2px;}
+}
+</style>
 </head>
 <body>
 
+<!-- ══ HEADER ══ -->
+<header class="site-header">
+  <div class="wolf-logo-wrap">
+    <svg class="wolf-svg" viewBox="0 0 210 210" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="fg" cx="50%" cy="38%" r="55%"><stop offset="0%" stop-color="#8a8fa0"/><stop offset="100%" stop-color="#3a3d48"/></radialGradient>
+        <radialGradient id="fg2" cx="50%" cy="45%" r="50%"><stop offset="0%" stop-color="#b2b7c8"/><stop offset="100%" stop-color="#6b7080"/></radialGradient>
+      </defs>
+      <ellipse cx="105" cy="183" rx="32" ry="22" fill="#2e3040" opacity="0.6"/>
+      <ellipse cx="105" cy="170" rx="38" ry="14" fill="#3a3d4e" opacity="0.5"/>
+      <ellipse cx="105" cy="108" rx="60" ry="64" fill="url(#fg)"/>
+      <polygon points="55,64 40,16 77,56" fill="#42455a"/>
+      <polygon points="58,62 46,26 73,56" fill="#1e1a2e"/>
+      <polygon points="60,60 50,32 70,55" fill="#6b3060" opacity="0.5"/>
+      <polygon points="155,64 170,16 133,56" fill="#42455a"/>
+      <polygon points="152,62 164,26 137,56" fill="#1e1a2e"/>
+      <polygon points="150,60 160,32 140,55" fill="#6b3060" opacity="0.5"/>
+      <ellipse cx="105" cy="117" rx="40" ry="46" fill="url(#fg2)" opacity="0.55"/>
+      <ellipse cx="105" cy="82" rx="20" ry="13" fill="#252838" opacity="0.45"/>
+      <path d="M 70 120 Q 80 115 88 120" fill="none" stroke="#9a9fb5" stroke-width="1" opacity="0.4"/>
+      <path d="M 72 128 Q 82 123 90 127" fill="none" stroke="#9a9fb5" stroke-width="1" opacity="0.4"/>
+      <path d="M 140 120 Q 130 115 122 120" fill="none" stroke="#9a9fb5" stroke-width="1" opacity="0.4"/>
+      <path d="M 138 128 Q 128 123 120 127" fill="none" stroke="#9a9fb5" stroke-width="1" opacity="0.4"/>
+      <!-- Glasses -->
+      <line x1="87" y1="104" x2="123" y2="104" stroke="#111018" stroke-width="2.8"/>
+      <rect x="63" y="95" width="24" height="17" rx="5" fill="none" stroke="#111018" stroke-width="3"/>
+      <rect x="123" y="95" width="24" height="17" rx="5" fill="none" stroke="#111018" stroke-width="3"/>
+      <rect x="64" y="96" width="22" height="15" rx="4" fill="#091520" opacity="0.65"/>
+      <rect x="124" y="96" width="22" height="15" rx="4" fill="#091520" opacity="0.65"/>
+      <line x1="63" y1="103" x2="45" y2="108" stroke="#111018" stroke-width="2.2"/>
+      <line x1="147" y1="103" x2="165" y2="108" stroke="#111018" stroke-width="2.2"/>
+      <!-- Eyes -->
+      <ellipse cx="75" cy="103" rx="7" ry="6" fill="#d4a017" opacity="0.9"/>
+      <ellipse cx="135" cy="103" rx="7" ry="6" fill="#d4a017" opacity="0.9"/>
+      <circle cx="75" cy="103" r="3.5" fill="#080606"/>
+      <circle cx="135" cy="103" r="3.5" fill="#080606"/>
+      <circle cx="76.5" cy="101.5" r="1.2" fill="white" opacity="0.85"/>
+      <circle cx="136.5" cy="101.5" r="1.2" fill="white" opacity="0.85"/>
+      <!-- Snout -->
+      <ellipse cx="105" cy="132" rx="24" ry="18" fill="#9a9fb5"/>
+      <ellipse cx="105" cy="126" rx="15" ry="11" fill="#c0c5d5" opacity="0.55"/>
+      <ellipse cx="105" cy="123" rx="8" ry="5.5" fill="#16121e"/>
+      <ellipse cx="103" cy="121.5" rx="2.2" ry="1.5" fill="white" opacity="0.35"/>
+      <path d="M 93 133 Q 105 141 117 133" fill="none" stroke="#16121e" stroke-width="2" stroke-linecap="round"/>
+      <path d="M 91 128 Q 98 123 105 126 Q 112 123 119 128" fill="none" stroke="#2a2038" stroke-width="2" opacity="0.8"/>
+      <!-- Rose stem -->
+      <line x1="105" y1="138" x2="142" y2="165" stroke="#2a5618" stroke-width="3" stroke-linecap="round"/>
+      <line x1="118" y1="149" x2="113" y2="143" stroke="#2a5618" stroke-width="1.5"/>
+      <line x1="130" y1="158" x2="125" y2="152" stroke="#2a5618" stroke-width="1.5"/>
+      <ellipse cx="124" cy="152" rx="9" ry="3.5" fill="#3a7a22" transform="rotate(-42 124 152)"/>
+      <!-- Rose -->
+      <ellipse cx="145" cy="162" rx="5" ry="3" fill="#2a5618" transform="rotate(50 145 162)"/>
+      <ellipse cx="142" cy="166" rx="5" ry="3" fill="#2a5618" transform="rotate(-30 142 166)"/>
+      <ellipse cx="147" cy="163" rx="11" ry="8" fill="#7b1218" transform="rotate(-25 147 163)"/>
+      <ellipse cx="150" cy="159" rx="10" ry="7" fill="#8e1a1a" transform="rotate(15 150 159)"/>
+      <ellipse cx="143" cy="158" rx="9" ry="7" fill="#961e1e" transform="rotate(-60 143 158)"/>
+      <ellipse cx="145" cy="168" rx="9" ry="6" fill="#8b1616" transform="rotate(45 145 168)"/>
+      <ellipse cx="147" cy="162" rx="8" ry="6" fill="#b01e22" transform="rotate(-15 147 162)"/>
+      <ellipse cx="149" cy="160" rx="7" ry="5.5" fill="#c0282c" transform="rotate(20 149 160)"/>
+      <ellipse cx="143" cy="161" rx="7" ry="5" fill="#b82024" transform="rotate(-50 143 161)"/>
+      <ellipse cx="146" cy="161" rx="5" ry="4" fill="#d63030" transform="rotate(-10 146 161)"/>
+      <ellipse cx="147" cy="160" rx="4" ry="3.5" fill="#e84040" transform="rotate(25 147 160)"/>
+      <circle cx="146" cy="161" r="3" fill="#ff7070" opacity="0.75"/>
+      <!-- Whiskers -->
+      <line x1="83" y1="130" x2="54" y2="124" stroke="#9a9fb5" stroke-width="1.2" opacity="0.55"/>
+      <line x1="83" y1="134" x2="53" y2="132" stroke="#9a9fb5" stroke-width="1.2" opacity="0.55"/>
+      <line x1="83" y1="138" x2="56" y2="142" stroke="#9a9fb5" stroke-width="1.2" opacity="0.55"/>
+      <line x1="127" y1="130" x2="148" y2="125" stroke="#9a9fb5" stroke-width="1.2" opacity="0.4"/>
+      <line x1="127" y1="134" x2="149" y2="133" stroke="#9a9fb5" stroke-width="1.2" opacity="0.4"/>
+    </svg>
+  </div>
+  <h1 class="site-title">שש-בסימור</h1>
+  <p class="site-tagline">טורניר הפלוגה · Season I</p>
+  <div class="dice-orn">
+    <div class="line"></div>
+    <span>🎲</span><span>🎲</span><span>🎲</span>
+    <div class="line"></div>
+  </div>
+</header>
+
+<!-- ══ NAV ══ -->
+<nav class="nav-bar">
+  <button class="nav-tab active" onclick="showPage('bets',this)">הימורים</button>
+  <button class="nav-tab" onclick="showPage('bracket',this)">עץ טורניר</button>
+  <button class="nav-tab" onclick="showPage('scores',this)">לוח מובילים</button>
+  <button class="nav-tab" onclick="showPage('admin',this)">🔑 ניהול</button>
+</nav>
+
+<div class="main">
+
+<!-- ══ BETS PAGE ══ -->
+<div class="page active" id="page-bets">
+  <div class="bettor-bar">
+    <label>🐺 השם שלי:</label>
+    <input type="text" id="bettor-name" placeholder="הכנס את שמך..." oninput="onNameInput()"/>
+    <span id="bettor-status"></span>
+  </div>
+  <!-- Bet blocks injected here by JS -->
+  <div id="bet-blocks-container"></div>
+</div>
+
+<!-- ══ BRACKET PAGE ══ -->
+<div class="page" id="page-bracket">
+  <div class="sec-head"><span class="orn">🎲</span>עץ הטורניר</div>
+  <div class="bracket-scroll">
+    <div id="bracket-tree" class="b-tree">
+      <div style="text-align:center;color:var(--muted);font-style:italic;padding:50px;">ממתין לנתוני טורניר...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCORES PAGE ══ -->
+<div class="page" id="page-scores">
+  <div class="sec-head"><span class="orn">🐺</span>לוח מובילים</div>
+  <div id="lb-empty" style="text-align:center;color:var(--muted);font-style:italic;padding:40px;">עדיין אין הימורים מאושרים...</div>
+  <table class="lb-table" id="lb-table" style="display:none">
+    <thead><tr><th>#</th><th>שחקן</th><th>נקודות</th><th>ניחושים ✓</th></tr></thead>
+    <tbody id="lb-body"></tbody>
+  </table>
+  <div style="margin-top:32px;background:var(--surface2);border:1px solid var(--border2);border-radius:14px;padding:22px;">
+    <div style="font-family:'Bebas Neue';letter-spacing:2px;color:var(--gold2);margin-bottom:12px;">מערכת ניקוד</div>
+    <div style="color:var(--muted2);line-height:2.4;font-size:15px;">
+      🏆 אלוף <span style="color:var(--cream)">10 נק׳</span> &nbsp;|&nbsp;
+      👑 גמר <span style="color:var(--cream)">8 נק׳</span> &nbsp;|&nbsp;
+      💥 חצי <span style="color:var(--cream)">4 נק׳</span> &nbsp;|&nbsp;
+      🔥 רבע <span style="color:var(--cream)">2 נק׳</span> &nbsp;|&nbsp;
+      ⚔️ שמינית <span style="color:var(--cream)">1 נק׳</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ADMIN PAGE ══ -->
+<div class="page" id="page-admin">
+  <div class="sec-head"><span class="orn">🔑</span>פאנל ניהול</div>
+
+  <div id="admin-lock" class="admin-card">
+    <h3>🔒 כניסה לניהול</h3>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+      <input type="password" class="ai" id="admin-pw" placeholder="סיסמה..." style="max-width:220px;" onkeydown="if(event.key==='Enter')checkPw()"/>
+      <button class="abtn primary" onclick="checkPw()">כניסה</button>
+    </div>
+  </div>
+
+  <div id="admin-body" style="display:none;">
+
+    <!-- Per-round lock controls -->
+    <div class="admin-card">
+      <h3>🔒 נעילת הימורים לפי שלב</h3>
+      <div id="lock-controls"></div>
+    </div>
+
+    <!-- Players -->
+    <div class="admin-card">
+      <h3>👥 שחקני הטורניר (16)</h3>
+      <div class="pgrid" id="pgrid"></div>
+      <button class="abtn primary" onclick="savePlayers()">💾 שמור שחקנים</button>
+    </div>
+
+    <!-- R16 matchups -->
+    <div class="admin-card">
+      <h3>⚔️ שמינית גמר — הגרלה</h3>
+      <div class="mgrid" id="r16-madmin"></div><br/>
+      <button class="abtn primary" onclick="saveMatchups('r16')">💾 שמור זוגות שמינית</button>
+    </div>
+
+    <!-- QF matchups -->
+    <div class="admin-card">
+      <h3>🔥 רבע גמר — הגרלה</h3>
+      <div class="mgrid" id="qf-madmin"></div><br/>
+      <button class="abtn primary" onclick="saveMatchups('qf')">💾 שמור זוגות רבע גמר</button>
+      <div style="font-size:13px;color:var(--muted2);margin-top:8px;font-style:italic;">מתעדכן אוטומטית לאחר שמירת תוצאות שמינית — ניתן לשנות ידנית</div>
+    </div>
+
+    <!-- SF matchups -->
+    <div class="admin-card">
+      <h3>💥 חצי גמר — הגרלה</h3>
+      <div class="mgrid" id="sf-madmin"></div><br/>
+      <button class="abtn primary" onclick="saveMatchups('sf')">💾 שמור זוגות חצי גמר</button>
+    </div>
+
+    <!-- Final matchup -->
+    <div class="admin-card">
+      <h3>👑 גמר — הגרלה</h3>
+      <div class="mgrid" id="fin-madmin"></div><br/>
+      <button class="abtn primary" onclick="saveMatchups('final')">💾 שמור זוגות גמר</button>
+    </div>
+
+    <!-- Results -->
+    <div class="admin-card">
+      <h3>📋 תוצאות שמינית גמר</h3>
+      <div class="rgrid" id="r16-radmin"></div><br/>
+      <button class="abtn primary" onclick="saveRes('r16')">✅ שמור</button>
+    </div>
+    <div class="admin-card">
+      <h3>📋 תוצאות רבע גמר</h3>
+      <div class="rgrid" id="qf-radmin"></div><br/>
+      <button class="abtn primary" onclick="saveRes('qf')">✅ שמור</button>
+    </div>
+    <div class="admin-card">
+      <h3>📋 תוצאות חצי גמר</h3>
+      <div class="rgrid" id="sf-radmin"></div><br/>
+      <button class="abtn primary" onclick="saveRes('sf')">✅ שמור</button>
+    </div>
+    <div class="admin-card">
+      <h3>📋 תוצאת גמר</h3>
+      <div id="fin-radmin"></div><br/>
+      <button class="abtn primary" onclick="saveRes('final')">✅ שמור</button>
+    </div>
+
+    <!-- Pending -->
+    <div class="admin-card">
+      <h3>⏳ הימורים ממתינים לאישור</h3>
+      <div class="plist" id="pending-list"><div style="color:var(--muted);font-style:italic;">אין הימורים ממתינים</div></div>
+    </div>
+
+    <!-- Approved -->
+    <div class="admin-card">
+      <h3>✅ הימורים מאושרים</h3>
+      <div class="plist" id="approved-list"><div style="color:var(--muted);font-style:italic;">אין הימורים מאושרים</div></div>
+    </div>
+
+    <!-- Danger -->
+    <div class="admin-card">
+      <h3 style="color:#e07070;">⚠️ אזור סכנה</h3>
+      <button class="abtn danger" onclick="resetAll()">🗑️ איפוס מלא</button>
+      <button class="abtn danger" onclick="resetBets()">🗑️ מחק הימורים</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// CONSTANTS & ROUNDS CONFIG
+// ═══════════════════════════════════════════
+const ADMIN_PW = 'guyhagever';
+
+// Round definitions
+const ROUNDS = [
+  { key:'champion', label:'מי יזכה בטורניר?', icon:'🏆', pts:10, type:'champion' },
+  { key:'r16',  label:'שמינית גמר',  icon:'⚔️', pts:1,  type:'matches', count:8 },
+  { key:'qf',   label:'רבע גמר',     icon:'🔥', pts:2,  type:'matches', count:4 },
+  { key:'sf',   label:'חצי גמר',     icon:'💥', pts:4,  type:'matches', count:2 },
+  { key:'final',label:'גמר',         icon:'👑', pts:8,  type:'matches', count:1 },
+];
+
+// ═══════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════
+const gd = () => { try { return JSON.parse(localStorage.getItem('ssb4') || '{}'); } catch { return {}; } };
+const sd = d => localStorage.setItem('ssb4', JSON.stringify(d));
+const get = (k, def = null) => { const d = gd(); return d[k] !== undefined ? d[k] : def; };
+const set = (k, v) => { const d = gd(); d[k] = v; sd(d); };
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function toast(msg, err = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast' + (err ? ' err' : '');
+  requestAnimationFrame(() => t.classList.add('show'));
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function showPage(p, btn) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  if (btn) btn.classList.add('active');
+  const map = { bets: renderBets, bracket: renderBracket, scores: renderScores, admin: renderAdmin };
+  map[p] && map[p]();
+}
+
+// ── Per-round lock ──
+function isRoundLocked(rk) { return get('lock_' + rk, true); }
+function setRoundLock(rk, val) { set('lock_' + rk, val); }
+
+// ═══════════════════════════════════════════
+// BETS PAGE — one block per round
+// ═══════════════════════════════════════════
+function onNameInput() {
+  const name = document.getElementById('bettor-name').value.trim();
+  set('myName', name); renderBets();
+}
+
+function renderBets() {
+  const name = get('myName', '');
+  document.getElementById('bettor-name').value = name;
+  const players = get('players', []).filter(Boolean);
+
+  // Overall status
+  const approved = get('approved_bettors', []);
+  const pending  = get('pending_bettors', []);
+  const stEl = document.getElementById('bettor-status');
+  if (!stEl) return;
+
+  // Build blocks
+  const container = document.getElementById('bet-blocks-container');
+  container.innerHTML = ROUNDS.map(r => buildBetBlock(r, name, players)).join('');
+}
+
+function buildBetBlock(round, name, players) {
+  const locked  = isRoundLocked(round.key);
+  const approvedRounds = get('approved_rounds_' + name, {});
+  const pendingRounds  = get('pending_rounds_' + name, {});
+  const isApproved = approvedRounds[round.key];
+  const isPending  = pendingRounds[round.key];
+
+  const lockPill = `<span class="lock-pill ${locked ? 'locked' : 'open'}">${locked ? '🔒 נעול' : '🟢 פתוח'}</span>`;
+  const statusPill = isApproved
+    ? `<span class="atag">✓ מאושר</span>`
+    : isPending ? `<span class="ptag">⏳ ממתין</span>` : '';
+
+  let inner = '';
+
+  if (round.type === 'champion') {
+    const sel = get('draft_' + name + '_champion', null);
+    if (!players.length) {
+      inner = '<div style="color:var(--muted);font-style:italic;font-size:15px;">ממתין לשחקנים...</div>';
+    } else {
+      inner = `<div class="champ-grid">${players.map(p => `
+        <div class="champ-card ${sel === p ? 'selected' : ''} ${locked ? 'disabled' : ''}"
+             onclick="${locked ? "toast('הימור נעול!',true)" : `toggleChampion('${p}')`}">
+          ${p}</div>`).join('')}</div>`;
+    }
+  } else {
+    // Match round
+    const matchups = round.key === 'final'
+      ? (get('final_matchup', []).length ? [get('final_matchup', [])] : [])
+      : get(round.key + '_matchups', []);
+    const winners = get(round.key + '_winners', []);
+    const draftKey = 'draft_' + name + '_' + round.key;
+    const myBets = get(draftKey, {});
+
+    if (!matchups.length) {
+      inner = '<div style="color:var(--muted);font-style:italic;font-size:15px;">ממתין לנתוני הסיבוב...</div>';
+    } else {
+      inner = `<div class="round-grid" style="${round.count === 1 ? 'grid-template-columns:1fr;max-width:420px;' : ''}">
+        ${matchups.map((m, i) => {
+          const p1 = m[0] || '?', p2 = m[1] || '?';
+          const sel = myBets[i];
+          const w = winners[i] || '';
+          const c1 = w ? (w === p1 ? 'sel' : 'lost') : (sel === p1 ? 'sel' : '');
+          const c2 = w ? (w === p2 ? 'sel' : 'lost') : (sel === p2 ? 'sel' : '');
+          return `<div class="match-card">
+            <div class="match-num">משחק ${i + 1}</div>
+            <div class="match-player ${c1} ${locked || w ? 'disabled' : ''}"
+                 onclick="${locked || w ? '' : `toggleMatchBet('${round.key}',${i},'${p1}')`}">
+              <span>${p1}</span>
+              ${sel === p1 && !w ? '<span class="badge">✓</span>' : ''}
+              ${w === p1 ? '<span>👑</span>' : ''}
+            </div>
+            <div class="vs-sep">VS</div>
+            <div class="match-player ${c2} ${locked || w ? 'disabled' : ''}"
+                 onclick="${locked || w ? '' : `toggleMatchBet('${round.key}',${i},'${p2}')`}">
+              <span>${p2}</span>
+              ${sel === p2 && !w ? '<span class="badge">✓</span>' : ''}
+              ${w === p2 ? '<span>👑</span>' : ''}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }
+  }
+
+  const submitDisabled = locked ? 'disabled' : '';
+  const submitArea = locked
+    ? `<div class="block-locked-msg">🔒 הימור זה נעול — פנה למנהל</div>`
+    : `<button class="block-submit-btn" ${submitDisabled} onclick="submitRoundBet('${round.key}')">
+         🎲 שלח הימור — ${round.label}
+       </button>`;
+
+  return `
+    <div class="bet-block" id="block-${round.key}">
+      <div class="bet-block-header">
+        <span class="bet-block-title">${round.icon} ${round.label} <span style="color:var(--muted2);font-size:12px;letter-spacing:1px;">(${round.pts} נק׳)</span></span>
+        <div class="bet-block-status">${lockPill}${statusPill}</div>
+      </div>
+      ${inner}
+      ${submitArea}
+    </div>`;
+}
+
+function toggleChampion(p) {
+  const name = get('myName', '');
+  if (!name) { toast('הכנס שם קודם!', true); return; }
+  if (isRoundLocked('champion')) { toast('הימור נעול!', true); return; }
+  const key = 'draft_' + name + '_champion';
+  const cur = get(key, null);
+  set(key, cur === p ? null : p);
+  renderBets();
+}
+
+function toggleMatchBet(rk, idx, p) {
+  const name = get('myName', '');
+  if (!name) { toast('הכנס שם קודם!', true); return; }
+  if (isRoundLocked(rk)) { toast('הימור נעול!', true); return; }
+  const key = 'draft_' + name + '_' + rk;
+  const bets = get(key, {});
+  bets[idx] = bets[idx] === p ? null : p;
+  set(key, bets);
+  renderBets();
+}
+
+function submitRoundBet(rk) {
+  if (isRoundLocked(rk)) { toast('הימור נעול!', true); return; }
+  const name = (get('myName', '')).trim();
+  if (!name) { toast('הכנס שם קודם!', true); return; }
+
+  // Move this round to pending
+  const pendingRounds = get('pending_rounds_' + name, {});
+  const approvedRounds = get('approved_rounds_' + name, {});
+  pendingRounds[rk] = true;
+  delete approvedRounds[rk];
+  set('pending_rounds_' + name, pendingRounds);
+  set('approved_rounds_' + name, approvedRounds);
+
+  // Snapshot the draft
+  if (rk === 'champion') {
+    set('submitted_' + name + '_champion', get('draft_' + name + '_champion', null));
+  } else {
+    set('submitted_' + name + '_' + rk, get('draft_' + name + '_' + rk, {}));
+  }
+
+  // Track bettor
+  const allBettors = get('all_bettors', []);
+  if (!allBettors.includes(name)) { allBettors.push(name); set('all_bettors', allBettors); }
+
+  toast(`✅ הימור "${ROUNDS.find(r=>r.key===rk)?.label}" נשלח לאישור!`);
+  renderBets();
+}
+
+// ═══════════════════════════════════════════
+// BRACKET TREE — top-down
+// ═══════════════════════════════════════════
+function renderBracket() {
+  const tree = document.getElementById('bracket-tree');
+  const r16  = get('r16_matchups', []);
+  if (!r16.length) {
+    tree.innerHTML = '<div style="text-align:center;color:var(--muted);font-style:italic;padding:50px;">ממתין לנתוני טורניר...</div>';
+    return;
+  }
+
+  const qf   = get('qf_matchups', []);
+  const sf   = get('sf_matchups', []);
+  const fin  = get('final_matchup', []);
+  const r16w = get('r16_winners', []);
+  const qfw  = get('qf_winners', []);
+  const sfw  = get('sf_winners', []);
+  const finw = get('final_winner', '');
+
+  const mkMatch = (m, w) => {
+    const p1 = (m && m[0]) || 'TBD';
+    const p2 = (m && m[1]) || 'TBD';
+    const c1 = w ? (w === p1 ? 'winner' : 'loser') : '';
+    const c2 = w ? (w === p2 ? 'winner' : 'loser') : '';
+    return `<div class="b-match">
+      <div class="b-player ${c1}"><span class="pn">${p1}</span>${w===p1?'<span>👑</span>':''}</div>
+      <div class="b-player ${c2}"><span class="pn">${p2}</span>${w===p2?'<span>👑</span>':''}</div>
+    </div>`;
+  };
+
+  // Spacing: each row has half the slots of the previous
+  // We use CSS flex + space-around; the natural spacing will align
+  // because each match in row N covers the same horizontal span as 2 matches in row N-1
+
+  function buildRow(matches, winners, label, isLast) {
+    const matchesHTML = matches.map((m, i) => `
+      <div class="b-match-wrap ${isLast ? 'no-line' : ''}">
+        ${mkMatch(m, winners[i] || '')}
+      </div>`).join('');
+    return `<div class="b-row">
+      <div class="b-row-head">${label}</div>
+      <div class="b-row-matches">${matchesHTML}</div>
+    </div>`;
+  }
+
+  const rows = [
+    buildRow(r16, r16w, '⚔️ שמינית גמר', false),
+    buildRow(qf.length ? qf : Array(4).fill(['TBD','TBD']), qfw, '🔥 רבע גמר', false),
+    buildRow(sf.length ? sf : Array(2).fill(['TBD','TBD']), sfw, '💥 חצי גמר', false),
+    buildRow(fin.length ? [fin] : [['TBD','TBD']], finw ? [finw] : [], '👑 גמר', true),
+  ];
+
+  const champBlock = `
+    <div class="b-champion-wrap">
+      <div class="b-champion">
+        <span class="b-trophy">🏆</span>
+        <div class="b-champ-lbl">אלוף שש-בסימור</div>
+        <div class="b-champ-name">${finw || '?'}</div>
+      </div>
+    </div>`;
+
+  tree.innerHTML = rows.join('') + champBlock;
+}
+
+// ═══════════════════════════════════════════
+// SCORES
+// ═══════════════════════════════════════════
+function calcScore(name) {
+  const approvedRounds = get('approved_rounds_' + name, {});
+  const r16w = get('r16_winners', []);
+  const qfw  = get('qf_winners', []);
+  const sfw  = get('sf_winners', []);
+  const finw = get('final_winner', '');
+  let score = 0, correct = 0;
+
+  if (approvedRounds.champion) {
+    const b = get('submitted_' + name + '_champion', null);
+    if (b && b === finw) { score += 10; correct++; }
+  }
+  const roundMap = [
+    { key:'r16', winners:r16w, pts:1 },
+    { key:'qf',  winners:qfw,  pts:2 },
+    { key:'sf',  winners:sfw,  pts:4 },
+  ];
+  roundMap.forEach(({ key, winners, pts }) => {
+    if (!approvedRounds[key]) return;
+    const bets = get('submitted_' + name + '_' + key, {});
+    winners.forEach((w, i) => { if (w && bets[i] === w) { score += pts; correct++; } });
+  });
+  if (approvedRounds.final) {
+    const bets = get('submitted_' + name + '_final', {});
+    if (finw && bets[0] === finw) { score += 8; correct++; }
+  }
+  return { score, correct };
+}
+
+function renderScores() {
+  const all = get('all_bettors', []);
+  if (!all.length) {
+    document.getElementById('lb-empty').style.display = 'block';
+    document.getElementById('lb-table').style.display = 'none';
+    return;
+  }
+  document.getElementById('lb-empty').style.display = 'none';
+  document.getElementById('lb-table').style.display = 'table';
+
+  const rows = all.map(n => ({ name: n, ...calcScore(n) }))
+    .sort((a, b) => b.score - a.score || b.correct - a.correct);
+  const mx = rows[0]?.score || 1;
+
+  document.getElementById('lb-body').innerHTML = rows.map((r, i) => `
+    <tr class="${i === 0 ? 'r1' : ''}">
+      <td><span class="rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</span></td>
+      <td style="font-size:19px;font-weight:600;">${r.name}</td>
+      <td><div class="score-bw">
+        <strong style="font-family:'Bebas Neue';font-size:22px;min-width:36px;">${r.score}</strong>
+        <div class="score-bar" style="width:${Math.round((r.score/mx)*160)}px"></div>
+      </div></td>
+      <td style="color:var(--muted2);">${r.correct}</td>
+    </tr>`).join('');
+}
+
+// ═══════════════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════════════
+function checkPw() {
+  if (document.getElementById('admin-pw').value === ADMIN_PW) {
+    document.getElementById('admin-lock').style.display = 'none';
+    document.getElementById('admin-body').style.display = 'block';
+    renderAdmin();
+  } else toast('סיסמה שגויה!', true);
+}
+
+function renderAdmin() {
+  renderLockControls();
+  renderPlayerInputs();
+  renderAllMatchupInputs();
+  renderResAdmin();
+  renderPending();
+}
+
+// ── Lock controls ──
+function renderLockControls() {
+  const el = document.getElementById('lock-controls');
+  el.innerHTML = ROUNDS.map(r => {
+    const L = isRoundLocked(r.key);
+    return `<div class="round-lock-row">
+      <div class="rll-info">
+        <strong>${r.icon} ${r.label}</strong>
+        <span>${L ? '🔒 הימורים נעולים' : '🟢 הימורים פתוחים'}</span>
+      </div>
+      <button class="abtn sm ${L ? 'success' : 'danger'}" onclick="adminToggleLock('${r.key}')">
+        ${L ? 'שחרר' : 'נעל'}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function adminToggleLock(rk) {
+  const L = !isRoundLocked(rk);
+  setRoundLock(rk, L);
+  toast(L ? `🔒 "${ROUNDS.find(r=>r.key===rk)?.label}" ננעל` : `🟢 "${ROUNDS.find(r=>r.key===rk)?.label}" שוחרר`);
+  renderLockControls();
+}
+
+// ── Players ──
+function renderPlayerInputs() {
+  const ps = get('players', Array(16).fill(''));
+  document.getElementById('pgrid').innerHTML = Array.from({ length: 16 }, (_, i) => `
+    <div class="prow">
+      <span class="pnum">${i + 1}.</span>
+      <input class="ai" id="p-${i}" value="${ps[i] || ''}" placeholder="שם..."/>
+    </div>`).join('');
+}
+
+function savePlayers() {
+  const ps = Array.from({ length: 16 }, (_, i) => document.getElementById('p-' + i)?.value.trim() || '');
+  set('players', ps);
+  toast('✅ שחקנים נשמרו!');
+  renderAllMatchupInputs();
+}
+
+// ── Matchup inputs — smart filtering ──
+// Returns players NOT yet used in the given round's matchups (except at slotIdx/playerPos)
+function getAvailablePlayersForSlot(roundKey, matchIdx, playerPos, matchups) {
+  const used = new Set();
+  matchups.forEach((m, mi) => {
+    m.forEach((p, pi) => {
+      if (p && !(mi === matchIdx && pi === playerPos)) used.add(p);
+    });
+  });
+  return get('players', []).filter(p => p && !used.has(p));
+}
+
+function renderAllMatchupInputs() {
+  renderMatchupSection('r16', 'r16-madmin', 8, []);
+  renderMatchupSection('qf',  'qf-madmin',  4, get('r16_winners', []));
+  renderMatchupSection('sf',  'sf-madmin',  2, [...get('r16_winners',[]), ...get('qf_winners',[])]);
+  renderMatchupSection('final','fin-madmin', 1, [...get('r16_winners',[]),...get('qf_winners',[]),...get('sf_winners',[])]);
+}
+
+function renderMatchupSection(rk, elId, count, usedInPreviousRounds) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const players = get('players', []).filter(Boolean);
+  const matchups = rk === 'final'
+    ? (get('final_matchup', []).length ? [get('final_matchup', [])] : Array(1).fill(['', '']))
+    : get(rk + '_matchups', Array(count).fill(['', '']));
+
+  if (!players.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-style:italic;">שמור שחקנים קודם</div>';
+    return;
+  }
+
+  // Build the grid
+  el.innerHTML = Array.from({ length: count }, (_, i) => {
+    const m = matchups[i] || ['', ''];
+
+    // For each slot, options = players not assigned to ANY other slot in this round
+    const opts0 = buildOpts(rk, i, 0, matchups, players);
+    const opts1 = buildOpts(rk, i, 1, matchups, players);
+
+    return `<div class="mrow">
+      <span class="mlbl">מ${i + 1}</span>
+      <select class="msel" id="${rk}-m-${i}-0" onchange="onMatchupChange('${rk}',${i})">${opts0}</select>
+      <span class="mvs">VS</span>
+      <select class="msel" id="${rk}-m-${i}-1" onchange="onMatchupChange('${rk}',${i})">${opts1}</select>
+    </div>`;
+  }).join('');
+
+  // Set saved values
+  matchups.forEach((m, i) => {
+    const s0 = document.getElementById(`${rk}-m-${i}-0`);
+    const s1 = document.getElementById(`${rk}-m-${i}-1`);
+    if (s0 && m[0]) s0.value = m[0];
+    if (s1 && m[1]) s1.value = m[1];
+  });
+}
+
+function buildOpts(rk, matchIdx, playerPos, matchups, players) {
+  // Get currently used players in other slots
+  const used = new Set();
+  matchups.forEach((m, mi) => {
+    m.forEach((p, pi) => {
+      if (p && !(mi === matchIdx && pi === playerPos)) used.add(p);
+    });
+  });
+  const available = players.filter(p => !used.has(p));
+  // Always include the currently selected value even if somehow duplicate
+  const cur = matchups[matchIdx]?.[playerPos];
+  if (cur && !available.includes(cur)) available.unshift(cur);
+  return '<option value="">-- בחר --</option>' + available.map(p => `<option value="${p}">${p}</option>`).join('');
+}
+
+function onMatchupChange(rk, matchIdx) {
+  // Save current state then re-render to refresh available options in other selects
+  readAndSaveMatchupsTemp(rk);
+  renderMatchupSection(rk, rk + '-madmin', rk === 'final' ? 1 : rk === 'sf' ? 2 : rk === 'qf' ? 4 : 8, []);
+}
+
+function readAndSaveMatchupsTemp(rk) {
+  const count = rk === 'final' ? 1 : rk === 'sf' ? 2 : rk === 'qf' ? 4 : 8;
+  const mu = Array.from({ length: count }, (_, i) => [
+    document.getElementById(`${rk}-m-${i}-0`)?.value || '',
+    document.getElementById(`${rk}-m-${i}-1`)?.value || ''
+  ]);
+  if (rk === 'final') set('final_matchup', mu[0]);
+  else set(rk + '_matchups', mu);
+}
+
+function saveMatchups(rk) {
+  readAndSaveMatchupsTemp(rk);
+  toast(`✅ זוגות ${ROUNDS.find(r=>r.key===rk)?.label || rk} נשמרו!`);
+  renderAllMatchupInputs();
+  renderResAdmin();
+}
+
+// ── Results ──
+function renderResAdmin() {
+  renderResSection('r16', 'r16-radmin', 8);
+  renderResSection('qf',  'qf-radmin',  4);
+  renderResSection('sf',  'sf-radmin',  2);
+  renderFinalRes();
+}
+
+function renderResSection(rk, elId, count) {
+  const mu = get(rk + '_matchups', []);
+  const ws = get(rk + '_winners', []);
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (!mu.length) { el.innerHTML = '<div style="color:var(--muted);font-style:italic;">ממתין לנתוני הסיבוב...</div>'; return; }
+  el.innerHTML = mu.slice(0, count).map((m, i) => {
+    const p1 = m[0] || '?', p2 = m[1] || '?';
+    return `<div class="rrow">
+      <span class="rlbl">מ${i + 1}</span>
+      <select class="rsel" id="${rk}-w-${i}">
+        <option value="">-- מנצח --</option>
+        <option value="${p1}">${p1}</option>
+        <option value="${p2}">${p2}</option>
+      </select>
+    </div>`;
+  }).join('');
+  ws.forEach((w, i) => { const s = document.getElementById(`${rk}-w-${i}`); if (s && w) s.value = w; });
+}
+
+function renderFinalRes() {
+  const fin  = get('final_matchup', []);
+  const finw = get('final_winner', '');
+  const el   = document.getElementById('fin-radmin');
+  if (!el) return;
+  if (!fin.length || !fin[0]) { el.innerHTML = '<div style="color:var(--muted);font-style:italic;">ממתין לנתוני גמר...</div>'; return; }
+  el.innerHTML = `<div class="rrow">
+    <span class="rlbl">גמר</span>
+    <select class="rsel" id="final-w-0">
+      <option value="">-- מנצח --</option>
+      <option value="${fin[0]}">${fin[0]}</option>
+      <option value="${fin[1]}">${fin[1]}</option>
+    </select>
+  </div>`;
+  if (finw) { const s = document.getElementById('final-w-0'); if (s) s.value = finw; }
+}
+
+function saveRes(rk) {
+  if (rk === 'r16') {
+    const ws = Array.from({ length: 8 }, (_, i) => document.getElementById(`r16-w-${i}`)?.value || '');
+    set('r16_winners', ws);
+    // Auto-populate QF from winners
+    const qfMu = Array.from({ length: 4 }, (_, i) => [ws[i * 2] || '', ws[i * 2 + 1] || '']);
+    set('qf_matchups', qfMu);
+    toast('✅ שמינית נשמרה + רבע עודכן!');
+  } else if (rk === 'qf') {
+    const ws = Array.from({ length: 4 }, (_, i) => document.getElementById(`qf-w-${i}`)?.value || '');
+    set('qf_winners', ws);
+    const sfMu = Array.from({ length: 2 }, (_, i) => [ws[i * 2] || '', ws[i * 2 + 1] || '']);
+    set('sf_matchups', sfMu);
+    toast('✅ רבע נשמר + חצי עודכן!');
+  } else if (rk === 'sf') {
+    const ws = Array.from({ length: 2 }, (_, i) => document.getElementById(`sf-w-${i}`)?.value || '');
+    set('sf_winners', ws);
+    set('final_matchup', [ws[0] || '', ws[1] || '']);
+    toast('✅ חצי נשמר + גמר עודכן!');
+  } else if (rk === 'final') {
+    const w = document.getElementById('final-w-0')?.value || '';
+    set('final_winner', w);
+    toast('✅ אלוף נשמר! 🏆');
+  }
+  renderResAdmin();
+  renderAllMatchupInputs();
+}
+
+// ── Pending approval ──
+function renderPending() {
+  const all = get('all_bettors', []);
+  const pEl = document.getElementById('pending-list');
+  const aEl = document.getElementById('approved-list');
+
+  // Build pending items: a bettor+round pair
+  const pendingItems = [];
+  const approvedItems = [];
+
+  all.forEach(name => {
+    const pending  = get('pending_rounds_' + name, {});
+    const approved = get('approved_rounds_' + name, {});
+    ROUNDS.forEach(r => {
+      if (pending[r.key])  pendingItems.push({ name, round: r });
+      if (approved[r.key]) approvedItems.push({ name, round: r });
+    });
+  });
+
+  if (!pendingItems.length) {
+    pEl.innerHTML = '<div style="color:var(--muted);font-style:italic;">אין הימורים ממתינים</div>';
+  } else {
+    pEl.innerHTML = pendingItems.map(({ name, round: r }) => {
+      let betDesc = '';
+      if (r.type === 'champion') {
+        const b = get('submitted_' + name + '_champion', null);
+        betDesc = b ? `🏆 <strong>${b}</strong>` : '<em>לא נבחר</em>';
+      } else {
+        const bets = get('submitted_' + name + '_' + r.key, {});
+        const mu = r.key === 'final' ? (get('final_matchup',[]).length?[get('final_matchup',[])]:[]) : get(r.key+'_matchups',[]);
+        betDesc = Object.entries(bets).filter(([,v])=>v).map(([i,v])=>`מ${+i+1}:<strong>${v}</strong>`).join(' | ') || '<em>אין בחירות</em>';
+      }
+      return `<div class="pitem">
+        <div class="piname">${r.icon} ${name} — ${r.label}</div>
+        <div class="pibets">${betDesc}</div>
+        <div class="piacts">
+          <button class="abtn success sm" onclick="approveBet('${name}','${r.key}')">✅ אשר</button>
+          <button class="abtn danger sm" onclick="rejectBet('${name}','${r.key}')">❌ דחה</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  if (!approvedItems.length) {
+    aEl.innerHTML = '<div style="color:var(--muted);font-style:italic;">אין הימורים מאושרים</div>';
+  } else {
+    aEl.innerHTML = approvedItems.map(({ name, round: r }) => `
+      <div class="pitem">
+        <div class="piname">✅ ${name} — ${r.icon} ${r.label}</div>
+        <div class="piacts">
+          <button class="abtn danger sm" onclick="revokeApproval('${name}','${r.key}')">↩️ בטל אישור</button>
+        </div>
+      </div>`).join('');
+  }
+}
+
+function approveBet(name, rk) {
+  const pending  = get('pending_rounds_' + name, {});
+  const approved = get('approved_rounds_' + name, {});
+  delete pending[rk]; approved[rk] = true;
+  set('pending_rounds_' + name, pending);
+  set('approved_rounds_' + name, approved);
+  // Finalize bets for scoring
+  if (rk === 'champion') set('final_bets_' + name + '_champion', get('submitted_' + name + '_champion', null));
+  else set('final_bets_' + name + '_' + rk, get('submitted_' + name + '_' + rk, {}));
+  const all = get('all_bettors', []); if (!all.includes(name)) { all.push(name); set('all_bettors', all); }
+  toast(`✅ הימור "${ROUNDS.find(r=>r.key===rk)?.label}" של ${name} אושר!`);
+  renderPending(); renderScores();
+}
+
+function rejectBet(name, rk) {
+  const pending = get('pending_rounds_' + name, {});
+  delete pending[rk];
+  set('pending_rounds_' + name, pending);
+  toast(`❌ הימור "${ROUNDS.find(r=>r.key===rk)?.label}" של ${name} נדחה`);
+  renderPending();
+}
+
+function revokeApproval(name, rk) {
+  const approved = get('approved_rounds_' + name, {});
+  const pending  = get('pending_rounds_' + name, {});
+  delete approved[rk]; pending[rk] = true;
+  set('approved_rounds_' + name, approved);
+  set('pending_rounds_' + name, pending);
+  toast('↩️ אישור בוטל — חזר לממתין');
+  renderPending();
+}
+
+// ── Danger zone ──
+function resetAll() {
+  if (!confirm('למחוק הכל? פעולה בלתי הפיכה!')) return;
+  localStorage.removeItem('ssb4');
+  toast('✅ הכל נמחק');
+  renderAdmin(); renderBets();
+}
+function resetBets() {
+  if (!confirm('למחוק את כל ההימורים?')) return;
+  const d = gd();
+  Object.keys(d).forEach(k => {
+    if (k.startsWith('bets_') || k.startsWith('draft_') || k.startsWith('submitted_') ||
+        k.startsWith('pending_rounds') || k.startsWith('approved_rounds') || k.startsWith('final_bets_')) delete d[k];
+  });
+  d.all_bettors = []; sd(d);
+  toast('✅ הימורים נמחקו'); renderAdmin(); renderBets();
+}
+
+// ═══════════════════════════════════════════
+// INIT — pre-load players if not already set
+// ═══════════════════════════════════════════
+const DEFAULT_PLAYERS = [
+  'חנן שטיין',
+  'ישי אדרי',
+  'שבי ספירו',
+  'יהודה אסוס',
+  'יהודה ישי',
+  'אהרון נתניא',
+  'רועי שאג',
+  'עזריאל סון',
+  'ידידיה',
+  'ישי קבדה',
+  'שילה דוד',
+  'רפי מבשר',
+  'מרטון',
+  'ברודריק',
+  'הירשברג',
+  'משה נחשון',
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Only pre-load if players haven't been saved yet
+  if (!get('players', null)) {
+    set('players', DEFAULT_PLAYERS);
+  }
+  renderBets();
+});
+</script>
 </body>
 </html>
