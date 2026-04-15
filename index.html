@@ -461,10 +461,35 @@ const ROUNDS = [
 // ═══════════════════════════════════════════
 // STORAGE
 // ═══════════════════════════════════════════
-const gd = () => { try { return JSON.parse(localStorage.getItem('ssb4') || '{}'); } catch { return {}; } };
-const sd = d => localStorage.setItem('ssb4', JSON.stringify(d));
-const get = (k, def = null) => { const d = gd(); return d[k] !== undefined ? d[k] : def; };
-const set = (k, v) => { const d = gd(); d[k] = v; sd(d); };
+// ── SERVER-BACKED STORAGE ──
+const API_URL = 'https://guykats.com/simor-bets/api.php';
+let _data = {};
+let _syncTimer = null;
+
+async function loadData() {
+  try {
+    const res = await fetch(API_URL + '?action=getAll');
+    if (res.ok) _data = await res.json();
+  } catch(e) { console.warn('Load failed', e); }
+}
+
+function scheduleSync() {
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(async () => {
+    try {
+      await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'setAll', data: _data })
+      });
+    } catch(e) { console.warn('Sync failed', e); }
+  }, 400);
+}
+
+const gd = () => _data;
+const sd = d => { _data = d; scheduleSync(); };
+const get = (k, def = null) => _data[k] !== undefined ? _data[k] : def;
+const set = (k, v) => { _data[k] = v; scheduleSync(); };
 
 // ═══════════════════════════════════════════
 // UTILS
@@ -1085,7 +1110,8 @@ function revokeApproval(name, rk) {
 // ── Danger zone ──
 function resetAll() {
   if (!confirm('למחוק הכל? פעולה בלתי הפיכה!')) return;
-  localStorage.removeItem('ssb4');
+  _data = {};
+  scheduleSync();
   toast('✅ הכל נמחק');
   renderAdmin(); renderBets();
 }
@@ -1122,11 +1148,23 @@ const DEFAULT_PLAYERS = [
   'משה נחשון',
 ];
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Only pre-load if players haven't been saved yet
+document.addEventListener('DOMContentLoaded', async () => {
+  document.body.insertAdjacentHTML('beforeend',
+    '<div id="loading-overlay" style="position:fixed;inset:0;background:rgba(13,11,10,0.88);display:flex;align-items:center;justify-content:center;z-index:9998;">' +
+    '<span style="font-family:\'Bebas Neue\';font-size:26px;letter-spacing:4px;color:var(--gold2);">טוען נתונים...</span></div>');
+  await loadData();
+  document.getElementById('loading-overlay')?.remove();
   if (!get('players', null)) {
     set('players', DEFAULT_PLAYERS);
   }
+  // רענון אוטומטי כל 30 שניות
+  setInterval(async () => {
+    await loadData();
+    const pid = document.querySelector('.page.active')?.id?.replace('page-', '');
+    if (pid === 'bets') renderBets();
+    else if (pid === 'scores') renderScores();
+    else if (pid === 'bracket') renderBracket();
+  }, 30000);
   renderBets();
 });
 </script>
