@@ -602,12 +602,18 @@ function buildBetBlock(round, name, players) {
     }
   }
 
-  const submitDisabled = locked ? 'disabled' : '';
-  const submitArea = locked
-    ? `<div class="block-locked-msg">🔒 הימור זה נעול — פנה למנהל</div>`
-    : `<button class="block-submit-btn" ${submitDisabled} onclick="submitRoundBet('${round.key}')">
+  let submitArea;
+  if (locked) {
+    submitArea = `<div class="block-locked-msg">🔒 הימור זה נעול — פנה למנהל</div>`;
+  } else if (isApproved) {
+    submitArea = `<div class="block-locked-msg" style="color:#7ddeaa;">✅ הימור אושר — לא ניתן לשנות</div>`;
+  } else if (isPending) {
+    submitArea = `<div class="block-locked-msg" style="color:var(--gold2);">⏳ הימור נשלח וממתין לאישור — לא ניתן לשלוח שוב</div>`;
+  } else {
+    submitArea = `<button class="block-submit-btn" onclick="submitRoundBet('${round.key}')">
          🎲 שלח הימור — ${round.label}
        </button>`;
+  }
 
   return `
     <div class="bet-block" id="block-${round.key}">
@@ -645,6 +651,8 @@ function submitRoundBet(rk) {
   if (isRoundLocked(rk)) { toast('הימור נעול!', true); return; }
   const name = (get('myName', '')).trim();
   if (!name) { toast('הכנס שם קודם!', true); return; }
+  if (get('pending_rounds_' + name, {})[rk])  { toast('כבר שלחת הימור זה — ממתין לאישור', true); return; }
+  if (get('approved_rounds_' + name, {})[rk]) { toast('הימור זה כבר אושר — לא ניתן לשנות', true); return; }
 
   // ── וידוא שכל השדות נבחרו ──
   if (rk === 'champion') {
