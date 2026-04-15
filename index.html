@@ -98,54 +98,25 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .block-locked-msg{margin-top:12px;text-align:center;color:#e07070;font-style:italic;font-size:15px;padding:8px;}
 
 /* ══════════════════════════════════
-   BRACKET TREE — top-down
+   BRACKET TREE — right-to-left
 ══════════════════════════════════ */
 .bracket-scroll{overflow-x:auto;padding-bottom:20px;}
-
-/* Each row is a round; rows stack top→bottom */
-.b-tree{display:flex;flex-direction:column;gap:0;min-width:900px;}
-
-.b-row{display:flex;flex-direction:column;padding:0 0 32px;}
-.b-row-head{font-family:'Bebas Neue';font-size:13px;letter-spacing:3px;color:var(--gold2);text-align:center;padding:10px 0 16px;border-bottom:1px solid rgba(184,134,11,0.2);margin-bottom:20px;}
-
-/* The matches in a row sit in a centered flex line */
-.b-row-matches{display:flex;justify-content:space-around;align-items:flex-start;gap:12px;position:relative;}
-
-/* Connector lines: after each match draw lines going down to the children */
-.b-match-wrap{display:flex;flex-direction:column;align-items:center;position:relative;}
-
-/* Vertical line going down from a match toward the next row */
-.b-match-wrap::after{
-  content:'';
-  position:absolute;
-  bottom:-32px; left:50%;
-  width:1px; height:32px;
-  background:linear-gradient(180deg,var(--border2),transparent);
-}
-
-/* For final match and champion, no line below */
-.b-match-wrap.no-line::after{display:none;}
-
-/* Horizontal bridge: between sibling pairs pointing to their parent */
-.b-bridge{
-  position:absolute;
-  top:-16px;
-  height:1px;
-  background:var(--border2);
-}
-
-.b-match{background:var(--surface);border:1px solid var(--border2);border-radius:10px;overflow:hidden;min-width:150px;max-width:200px;width:100%;}
-.b-player{padding:9px 12px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:6px;border-bottom:1px solid var(--border);}
+.b-tree{display:flex;flex-direction:row-reverse;min-height:620px;min-width:750px;}
+.b-col{display:flex;flex-direction:column;flex:1;min-width:150px;border-left:1px solid var(--border2);}
+.b-col:first-child{border-left:none;}
+.b-col-head{font-family:'Bebas Neue';font-size:12px;letter-spacing:2px;color:var(--gold2);text-align:center;padding:10px 6px 12px;border-bottom:1px solid rgba(184,134,11,0.2);}
+.b-col-body{display:flex;flex-direction:column;flex:1;}
+.b-slot{display:flex;flex:1;align-items:center;justify-content:center;padding:5px 8px;}
+.b-match{background:var(--surface);border:1px solid var(--border2);border-radius:10px;overflow:hidden;width:100%;}
+.b-player{padding:8px 11px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:6px;border-bottom:1px solid var(--border);}
 .b-player:last-child{border-bottom:none;}
 .b-player.winner{background:rgba(45,106,79,0.2);color:#7ddeaa;}
 .b-player.loser{opacity:0.35;}
 .b-player .pn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-
-.b-champion-wrap{display:flex;justify-content:center;padding-top:10px;}
-.b-champion{background:linear-gradient(135deg,rgba(184,134,11,0.18),rgba(155,34,38,0.08));border:1px solid rgba(184,134,11,0.45);border-radius:16px;padding:20px 28px;text-align:center;min-width:160px;}
-.b-champ-lbl{font-family:'Bebas Neue';font-size:12px;letter-spacing:3px;color:var(--gold2);margin-bottom:8px;}
-.b-champ-name{font-family:'Playfair Display';font-size:20px;color:var(--gold3);font-weight:700;}
-.b-trophy{font-size:32px;display:block;margin-bottom:8px;}
+.b-champion{background:linear-gradient(135deg,rgba(184,134,11,0.18),rgba(155,34,38,0.08));border:1px solid rgba(184,134,11,0.45);border-radius:14px;padding:14px 10px;text-align:center;width:100%;}
+.b-champ-lbl{font-family:'Bebas Neue';font-size:11px;letter-spacing:2px;color:var(--gold2);margin-bottom:6px;}
+.b-champ-name{font-family:'Playfair Display';font-size:16px;color:var(--gold3);font-weight:700;}
+.b-trophy{font-size:26px;display:block;margin-bottom:6px;}
 
 /* ── LEADERBOARD ── */
 .lb-table{width:100%;border-collapse:collapse;font-size:17px;}
@@ -293,7 +264,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 <!-- ══ NAV ══ -->
 <nav class="nav-bar">
   <button class="nav-tab active" onclick="showPage('bets',this)">הימורים</button>
-  <button class="nav-tab" onclick="showPage('bracket',this)">עץ טורניר</button>
+  <button class="nav-tab" onclick="showPage('bracket',this)">שלבים</button>
   <button class="nav-tab" onclick="showPage('scores',this)">לוח מובילים</button>
   <button class="nav-tab" onclick="showPage('admin',this)">🔑 ניהול</button>
 </nav>
@@ -313,7 +284,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
 <!-- ══ BRACKET PAGE ══ -->
 <div class="page" id="page-bracket">
-  <div class="sec-head"><span class="orn">🎲</span>עץ הטורניר</div>
+  <div class="sec-head"><span class="orn">🎲</span>שלבים</div>
   <div class="bracket-scroll">
     <div id="bracket-tree" class="b-tree">
       <div style="text-align:center;color:var(--muted);font-style:italic;padding:50px;">ממתין לנתוני טורניר...</div>
@@ -711,7 +682,7 @@ function submitRoundBet(rk) {
 }
 
 // ═══════════════════════════════════════════
-// BRACKET TREE — top-down
+// BRACKET TREE — right-to-left
 // ═══════════════════════════════════════════
 function renderBracket() {
   const tree = document.getElementById('bracket-tree');
@@ -740,38 +711,39 @@ function renderBracket() {
     </div>`;
   };
 
-  // Spacing: each row has half the slots of the previous
-  // We use CSS flex + space-around; the natural spacing will align
-  // because each match in row N covers the same horizontal span as 2 matches in row N-1
-
-  function buildRow(matches, winners, label, isLast) {
-    const matchesHTML = matches.map((m, i) => `
-      <div class="b-match-wrap ${isLast ? 'no-line' : ''}">
-        ${mkMatch(m, winners[i] || '')}
-      </div>`).join('');
-    return `<div class="b-row">
-      <div class="b-row-head">${label}</div>
-      <div class="b-row-matches">${matchesHTML}</div>
+  // עמודה לכל שלב — flex:1 על כל slot מיישר אוטומטית
+  const buildCol = (matches, winners, label) => {
+    const slots = matches.map((m, i) =>
+      `<div class="b-slot">${mkMatch(m, winners[i] || '')}</div>`
+    ).join('');
+    return `<div class="b-col">
+      <div class="b-col-head">${label}</div>
+      <div class="b-col-body">${slots}</div>
     </div>`;
-  }
+  };
 
-  const rows = [
-    buildRow(r16, r16w, '⚔️ שמינית גמר', false),
-    buildRow(qf.length ? qf : Array(4).fill(['TBD','TBD']), qfw, '🔥 רבע גמר', false),
-    buildRow(sf.length ? sf : Array(2).fill(['TBD','TBD']), sfw, '💥 חצי גמר', false),
-    buildRow(fin.length ? [fin] : [['TBD','TBD']], finw ? [finw] : [], '👑 גמר', true),
-  ];
-
-  const champBlock = `
-    <div class="b-champion-wrap">
-      <div class="b-champion">
-        <span class="b-trophy">🏆</span>
-        <div class="b-champ-lbl">אלוף שש-בסימור</div>
-        <div class="b-champ-name">${finw || '?'}</div>
+  const champCol = `<div class="b-col">
+    <div class="b-col-head">🏆 אלוף</div>
+    <div class="b-col-body">
+      <div class="b-slot">
+        <div class="b-champion">
+          <span class="b-trophy">🏆</span>
+          <div class="b-champ-lbl">אלוף שש-בסימור</div>
+          <div class="b-champ-name">${finw || '?'}</div>
+        </div>
       </div>
-    </div>`;
+    </div>
+  </div>`;
 
-  tree.innerHTML = rows.join('') + champBlock;
+  // סדר ב-DOM: אלוף → גמר → חצי → רבע → שמינית
+  // עם row-reverse, שמינית יופיע מימין ואלוף משמאל
+  tree.innerHTML = [
+    champCol,
+    buildCol(fin.length ? [fin] : [['TBD','TBD']], finw ? [finw] : [], '👑 גמר'),
+    buildCol(sf.length ? sf : Array(2).fill(['TBD','TBD']), sfw, '💥 חצי גמר'),
+    buildCol(qf.length ? qf : Array(4).fill(['TBD','TBD']), qfw, '🔥 רבע גמר'),
+    buildCol(r16, r16w, '⚔️ שמינית גמר'),
+  ].join('');
 }
 
 // ═══════════════════════════════════════════
