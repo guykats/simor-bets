@@ -28,6 +28,8 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .wolf-svg{width:210px;height:210px;}
 .site-title{font-family:'Playfair Display',serif;font-size:clamp(50px,10vw,104px);font-weight:900;color:var(--cream);letter-spacing:-3px;line-height:0.88;text-shadow:0 0 80px rgba(155,34,38,0.45),0 3px 0 rgba(0,0,0,0.6);margin-bottom:10px;}
 .site-tagline{font-family:'IM Fell English',serif;font-style:italic;font-size:20px;color:var(--gold2);letter-spacing:1px;}
+.season-num{font-family:'Bebas Neue';font-size:72px;font-style:normal;color:var(--gold3);line-height:0.85;vertical-align:middle;display:inline-block;animation:seasonPulse 3s ease-in-out infinite;text-shadow:0 0 30px rgba(212,160,23,0.7),0 0 60px rgba(155,34,38,0.4);}
+@keyframes seasonPulse{0%,100%{transform:scale(1) rotate(-2deg);text-shadow:0 0 30px rgba(212,160,23,0.7),0 0 60px rgba(155,34,38,0.4);}50%{transform:scale(1.15) rotate(2deg);text-shadow:0 0 50px rgba(212,160,23,1),0 0 90px rgba(155,34,38,0.7);}}
 .dice-orn{margin:16px 0 0;display:flex;align-items:center;justify-content:center;gap:12px;color:var(--muted2);font-size:22px;}
 .dice-orn .line{flex:1;max-width:130px;height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);}
 .dice-orn span{animation:rollDice 8s ease-in-out infinite;display:inline-block;}
@@ -258,7 +260,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     </svg>
   </div>
   <h1 class="site-title">שש-בסימור</h1>
-  <p class="site-tagline">טורניר הפלוגה · Season 3</p>
+  <p class="site-tagline">טורניר הפלוגה · <span class="season-num">3</span></p>
   <div class="dice-orn">
     <div class="line"></div>
     <span>🎲</span><span>🎲</span><span>🎲</span>
