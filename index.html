@@ -130,6 +130,11 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 /* ── ADMIN ── */
 .admin-card{background:var(--surface2);border:1px solid var(--border2);border-radius:14px;padding:24px;margin-bottom:22px;}
 .admin-card h3{font-family:'Bebas Neue';font-size:20px;letter-spacing:2px;color:var(--gold2);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+.admin-tabs{display:flex;gap:0;border-bottom:1px solid var(--border2);margin-bottom:24px;flex-wrap:wrap;}
+.admin-tab{padding:12px 22px;font-family:'Bebas Neue';font-size:15px;letter-spacing:2px;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;position:relative;top:1px;transition:all 0.2s;white-space:nowrap;}
+.admin-tab:hover{color:var(--cream);}
+.admin-tab.active{color:var(--gold3);border-bottom-color:var(--gold3);}
+.admin-pane{display:none;}.admin-pane.active{display:block;}
 .ai{background:rgba(13,11,10,0.9);border:1px solid var(--border2);border-radius:8px;padding:9px 13px;color:var(--cream);font-family:'Cormorant Garamond';font-size:17px;outline:none;width:100%;transition:border-color 0.2s;}
 .ai:focus{border-color:var(--gold2);}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px;margin-bottom:16px;}
@@ -325,88 +330,90 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   </div>
 
   <div id="admin-body" style="display:none;">
-
-    <!-- Per-round lock controls -->
-    <div class="admin-card">
-      <h3>🔒 נעילת הימורים לפי שלב</h3>
-      <div id="lock-controls"></div>
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="showAdminTab('locks',this)">🔒 נעילה</button>
+      <button class="admin-tab" onclick="showAdminTab('draw',this)">⚔️ הגרלה</button>
+      <button class="admin-tab" onclick="showAdminTab('results',this)">📋 תוצאות</button>
+      <button class="admin-tab" onclick="showAdminTab('bets',this)">⏳ הימורים</button>
     </div>
 
-    <!-- Players -->
-    <div class="admin-card">
-      <h3>👥 שחקני הטורניר (16)</h3>
-      <div class="pgrid" id="pgrid"></div>
-      <button class="abtn primary" onclick="savePlayers()">💾 שמור שחקנים</button>
+    <!-- TAB: נעילה -->
+    <div class="admin-pane active" id="apane-locks">
+      <div class="admin-card">
+        <h3>🔒 נעילת הימורים לפי שלב</h3>
+        <div id="lock-controls"></div>
+      </div>
+      <div class="admin-card">
+        <h3>👥 שחקני הטורניר (16)</h3>
+        <div class="pgrid" id="pgrid"></div>
+        <button class="abtn primary" onclick="savePlayers()">💾 שמור שחקנים</button>
+      </div>
     </div>
 
-    <!-- R16 matchups -->
-    <div class="admin-card">
-      <h3>⚔️ שמינית גמר — הגרלה</h3>
-      <div class="mgrid" id="r16-madmin"></div><br/>
-      <button class="abtn primary" onclick="saveMatchups('r16')">💾 שמור זוגות שמינית</button>
+    <!-- TAB: הגרלה -->
+    <div class="admin-pane" id="apane-draw">
+      <div class="admin-card">
+        <h3>⚔️ שמינית גמר — הגרלה</h3>
+        <div class="mgrid" id="r16-madmin"></div><br/>
+        <button class="abtn primary" onclick="saveMatchups('r16')">💾 שמור זוגות שמינית</button>
+      </div>
+      <div class="admin-card">
+        <h3>🔥 רבע גמר — הגרלה</h3>
+        <div class="mgrid" id="qf-madmin"></div><br/>
+        <button class="abtn primary" onclick="saveMatchups('qf')">💾 שמור זוגות רבע גמר</button>
+        <div style="font-size:13px;color:var(--muted2);margin-top:8px;font-style:italic;">מתעדכן אוטומטית לאחר שמירת תוצאות שמינית — ניתן לשנות ידנית</div>
+      </div>
+      <div class="admin-card">
+        <h3>💥 חצי גמר — הגרלה</h3>
+        <div class="mgrid" id="sf-madmin"></div><br/>
+        <button class="abtn primary" onclick="saveMatchups('sf')">💾 שמור זוגות חצי גמר</button>
+      </div>
+      <div class="admin-card">
+        <h3>👑 גמר — הגרלה</h3>
+        <div class="mgrid" id="fin-madmin"></div><br/>
+        <button class="abtn primary" onclick="saveMatchups('final')">💾 שמור זוגות גמר</button>
+      </div>
     </div>
 
-    <!-- QF matchups -->
-    <div class="admin-card">
-      <h3>🔥 רבע גמר — הגרלה</h3>
-      <div class="mgrid" id="qf-madmin"></div><br/>
-      <button class="abtn primary" onclick="saveMatchups('qf')">💾 שמור זוגות רבע גמר</button>
-      <div style="font-size:13px;color:var(--muted2);margin-top:8px;font-style:italic;">מתעדכן אוטומטית לאחר שמירת תוצאות שמינית — ניתן לשנות ידנית</div>
+    <!-- TAB: תוצאות -->
+    <div class="admin-pane" id="apane-results">
+      <div class="admin-card">
+        <h3>📋 תוצאות שמינית גמר</h3>
+        <div class="rgrid" id="r16-radmin"></div><br/>
+        <button class="abtn primary" onclick="saveRes('r16')">✅ שמור</button>
+      </div>
+      <div class="admin-card">
+        <h3>📋 תוצאות רבע גמר</h3>
+        <div class="rgrid" id="qf-radmin"></div><br/>
+        <button class="abtn primary" onclick="saveRes('qf')">✅ שמור</button>
+      </div>
+      <div class="admin-card">
+        <h3>📋 תוצאות חצי גמר</h3>
+        <div class="rgrid" id="sf-radmin"></div><br/>
+        <button class="abtn primary" onclick="saveRes('sf')">✅ שמור</button>
+      </div>
+      <div class="admin-card">
+        <h3>📋 תוצאת גמר</h3>
+        <div id="fin-radmin"></div><br/>
+        <button class="abtn primary" onclick="saveRes('final')">✅ שמור</button>
+      </div>
     </div>
 
-    <!-- SF matchups -->
-    <div class="admin-card">
-      <h3>💥 חצי גמר — הגרלה</h3>
-      <div class="mgrid" id="sf-madmin"></div><br/>
-      <button class="abtn primary" onclick="saveMatchups('sf')">💾 שמור זוגות חצי גמר</button>
-    </div>
-
-    <!-- Final matchup -->
-    <div class="admin-card">
-      <h3>👑 גמר — הגרלה</h3>
-      <div class="mgrid" id="fin-madmin"></div><br/>
-      <button class="abtn primary" onclick="saveMatchups('final')">💾 שמור זוגות גמר</button>
-    </div>
-
-    <!-- Results -->
-    <div class="admin-card">
-      <h3>📋 תוצאות שמינית גמר</h3>
-      <div class="rgrid" id="r16-radmin"></div><br/>
-      <button class="abtn primary" onclick="saveRes('r16')">✅ שמור</button>
-    </div>
-    <div class="admin-card">
-      <h3>📋 תוצאות רבע גמר</h3>
-      <div class="rgrid" id="qf-radmin"></div><br/>
-      <button class="abtn primary" onclick="saveRes('qf')">✅ שמור</button>
-    </div>
-    <div class="admin-card">
-      <h3>📋 תוצאות חצי גמר</h3>
-      <div class="rgrid" id="sf-radmin"></div><br/>
-      <button class="abtn primary" onclick="saveRes('sf')">✅ שמור</button>
-    </div>
-    <div class="admin-card">
-      <h3>📋 תוצאת גמר</h3>
-      <div id="fin-radmin"></div><br/>
-      <button class="abtn primary" onclick="saveRes('final')">✅ שמור</button>
-    </div>
-
-    <!-- Pending -->
-    <div class="admin-card">
-      <h3>⏳ הימורים ממתינים לאישור</h3>
-      <div class="plist" id="pending-list"><div style="color:var(--muted);font-style:italic;">אין הימורים ממתינים</div></div>
-    </div>
-
-    <!-- Approved -->
-    <div class="admin-card">
-      <h3>✅ הימורים מאושרים</h3>
-      <div class="plist" id="approved-list"><div style="color:var(--muted);font-style:italic;">אין הימורים מאושרים</div></div>
-    </div>
-
-    <!-- Danger -->
-    <div class="admin-card">
-      <h3 style="color:#e07070;">⚠️ אזור סכנה</h3>
-      <button class="abtn danger" onclick="resetAll()">🗑️ איפוס מלא</button>
-      <button class="abtn danger" onclick="resetBets()">🗑️ מחק הימורים</button>
+    <!-- TAB: הימורים -->
+    <div class="admin-pane" id="apane-bets">
+      <div class="admin-card">
+        <h3>⏳ הימורים ממתינים לאישור</h3>
+        <div class="plist" id="pending-list"><div style="color:var(--muted);font-style:italic;">אין הימורים ממתינים</div></div>
+      </div>
+      <div class="admin-card">
+        <h3>✅ הימורים מאושרים</h3>
+        <div class="plist" id="approved-list"><div style="color:var(--muted);font-style:italic;">אין הימורים מאושרים</div></div>
+      </div>
+      <div class="admin-card">
+        <h3 style="color:#e07070;">⚠️ אזור סכנה</h3>
+        <button class="abtn danger" onclick="resetAll()">🗑️ איפוס מלא</button>
+        <button class="abtn danger" onclick="resetBets()">🗑️ מחק הימורים</button>
+      </div>
     </div>
   </div>
 </div>
@@ -817,6 +824,13 @@ function renderScores() {
 // ═══════════════════════════════════════════
 // ADMIN
 // ═══════════════════════════════════════════
+function showAdminTab(tab, btn) {
+  document.querySelectorAll('.admin-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('apane-' + tab).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
 async function checkPw() {
   const pw = document.getElementById('admin-pw').value;
   try {
