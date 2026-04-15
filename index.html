@@ -595,7 +595,7 @@ function buildBetBlock(round, name, players) {
   } else if (isApproved) {
     submitArea = `<div class="block-locked-msg" style="color:#7ddeaa;">✅ הימור אושר — לא ניתן לשנות</div>`;
   } else if (isPending) {
-    submitArea = `<div class="block-locked-msg" style="color:var(--gold2);">⏳ הימור נשלח וממתין לאישור תשלום — לא ניתן לשלוח שוב</div>`;
+    submitArea = `<div class="block-locked-msg" style="color:var(--gold2);">⏳ הימור נשלח וממתין לאישור תשלום — לא ניתן לשלוח שוב<br><a href="https://links.payboxapp.com/Ymo49JFDm2b" target="_blank" style="color:var(--gold3);font-family:'Bebas Neue';letter-spacing:2px;font-size:16px;text-decoration:underline;">💳 לתשלום לחץ כאן</a></div>`;
   } else {
     submitArea = `<button class="block-submit-btn" onclick="submitRoundBet('${round.key}')">
          🎲 שלח הימור — ${round.label}
