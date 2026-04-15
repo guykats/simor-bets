@@ -646,6 +646,23 @@ function submitRoundBet(rk) {
   const name = (get('myName', '')).trim();
   if (!name) { toast('הכנס שם קודם!', true); return; }
 
+  // ── וידוא שכל השדות נבחרו ──
+  if (rk === 'champion') {
+    if (!get('draft_' + name + '_champion', null)) {
+      toast('בחר שחקן לפני שליחה!', true); return;
+    }
+  } else {
+    const matchups = rk === 'final'
+      ? (get('final_matchup', []).length ? [get('final_matchup', [])] : [])
+      : get(rk + '_matchups', []);
+    const bets = get('draft_' + name + '_' + rk, {});
+    const missing = matchups.findIndex((_, i) => !bets[i]);
+    if (!matchups.length) { toast('ממתין לנתוני הסיבוב', true); return; }
+    if (missing !== -1) {
+      toast(`בחר מנצח למשחק ${missing + 1} לפני שליחה!`, true); return;
+    }
+  }
+
   // Move this round to pending
   const pendingRounds = get('pending_rounds_' + name, {});
   const approvedRounds = get('approved_rounds_' + name, {});
