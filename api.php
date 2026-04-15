@@ -34,8 +34,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $body['action'] ?? $action;
 }
 
+// ── CHECK ADMIN PASSWORD ──
+if ($action === 'checkAdmin') {
+    $pw = $body['pw'] ?? '';
+    if ($pw && password_verify($pw, ADMIN_PW_HASH)) {
+        echo json_encode(['ok' => true]);
+    } else {
+        http_response_code(401);
+        echo json_encode(['ok' => false]);
+    }
+    exit;
+
 // ── GET ALL ──
-if ($action === 'getAll') {
+} elseif ($action === 'getAll') {
     $rows = $pdo->query("SELECT k, v FROM ssb4_store")->fetchAll(PDO::FETCH_ASSOC);
     $out  = new stdClass();
     foreach ($rows as $row) {

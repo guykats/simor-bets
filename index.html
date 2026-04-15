@@ -447,7 +447,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 // ═══════════════════════════════════════════
 // CONSTANTS & ROUNDS CONFIG
 // ═══════════════════════════════════════════
-const ADMIN_PW = 'guyhagever';
 
 // Round definitions
 const ROUNDS = [
@@ -836,12 +835,25 @@ function renderScores() {
 // ═══════════════════════════════════════════
 // ADMIN
 // ═══════════════════════════════════════════
-function checkPw() {
-  if (document.getElementById('admin-pw').value === ADMIN_PW) {
-    document.getElementById('admin-lock').style.display = 'none';
-    document.getElementById('admin-body').style.display = 'block';
-    renderAdmin();
-  } else toast('סיסמה שגויה!', true);
+async function checkPw() {
+  const pw = document.getElementById('admin-pw').value;
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'checkAdmin', pw })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      document.getElementById('admin-lock').style.display = 'none';
+      document.getElementById('admin-body').style.display = 'block';
+      renderAdmin();
+    } else {
+      toast('סיסמה שגויה!', true);
+    }
+  } catch {
+    toast('שגיאת חיבור לשרת!', true);
+  }
 }
 
 function renderAdmin() {
