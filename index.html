@@ -308,11 +308,8 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   <div style="margin-top:32px;background:var(--surface2);border:1px solid var(--border2);border-radius:14px;padding:22px;">
     <div style="font-family:'Bebas Neue';letter-spacing:2px;color:var(--gold2);margin-bottom:12px;">מערכת ניקוד</div>
     <div style="color:var(--muted2);line-height:2.4;font-size:15px;">
-      🏆 אלוף <span style="color:var(--cream)">10 נק׳</span> &nbsp;|&nbsp;
-      👑 גמר <span style="color:var(--cream)">8 נק׳</span> &nbsp;|&nbsp;
-      💥 חצי <span style="color:var(--cream)">4 נק׳</span> &nbsp;|&nbsp;
-      🔥 רבע <span style="color:var(--cream)">2 נק׳</span> &nbsp;|&nbsp;
-      ⚔️ שמינית <span style="color:var(--cream)">1 נק׳</span>
+      🏆 אלוף <span style="color:var(--cream)">15 נק׳</span> &nbsp;|&nbsp;
+      ⚔️ כל משחק <span style="color:var(--cream)">1 נק׳</span>
     </div>
   </div>
 </div>
@@ -428,11 +425,11 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
 // Round definitions
 const ROUNDS = [
-  { key:'champion', label:'מי יזכה בטורניר?', icon:'🏆', pts:10, type:'champion' },
+  { key:'champion', label:'מי יזכה בטורניר?', icon:'🏆', pts:15, type:'champion' },
   { key:'r16',  label:'שמינית גמר',  icon:'⚔️', pts:1,  type:'matches', count:8 },
-  { key:'qf',   label:'רבע גמר',     icon:'🔥', pts:2,  type:'matches', count:4 },
-  { key:'sf',   label:'חצי גמר',     icon:'💥', pts:4,  type:'matches', count:2 },
-  { key:'final',label:'גמר',         icon:'👑', pts:8,  type:'matches', count:1 },
+  { key:'qf',   label:'רבע גמר',     icon:'🔥', pts:1,  type:'matches', count:4 },
+  { key:'sf',   label:'חצי גמר',     icon:'💥', pts:1,  type:'matches', count:2 },
+  { key:'final',label:'גמר',         icon:'👑', pts:1,  type:'matches', count:1 },
 ];
 
 // ═══════════════════════════════════════════
@@ -776,21 +773,21 @@ function calcScore(name) {
 
   if (approvedRounds.champion) {
     const b = get('submitted_' + name + '_champion', null);
-    if (b && b === finw) { score += 10; correct++; }
+    if (b && b === finw) { score += 15; correct++; }
   }
   const roundMap = [
-    { key:'r16', winners:r16w, pts:1 },
-    { key:'qf',  winners:qfw,  pts:2 },
-    { key:'sf',  winners:sfw,  pts:4 },
+    { key:'r16', winners:r16w },
+    { key:'qf',  winners:qfw  },
+    { key:'sf',  winners:sfw  },
   ];
-  roundMap.forEach(({ key, winners, pts }) => {
+  roundMap.forEach(({ key, winners }) => {
     if (!approvedRounds[key]) return;
     const bets = get('submitted_' + name + '_' + key, {});
-    winners.forEach((w, i) => { if (w && bets[i] === w) { score += pts; correct++; } });
+    winners.forEach((w, i) => { if (w && bets[i] === w) { score += 1; correct++; } });
   });
   if (approvedRounds.final) {
     const bets = get('submitted_' + name + '_final', {});
-    if (finw && bets[0] === finw) { score += 8; correct++; }
+    if (finw && bets[0] === finw) { score += 1; correct++; }
   }
   return { score, correct };
 }
