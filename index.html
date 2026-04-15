@@ -253,7 +253,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     </svg>
   </div>
   <h1 class="site-title">שש-בסימור</h1>
-  <p class="site-tagline">טורניר הפלוגה · Season I</p>
+  <p class="site-tagline">טורניר הפלוגה · Season 3</p>
   <div class="dice-orn">
     <div class="line"></div>
     <span>🎲</span><span>🎲</span><span>🎲</span>
@@ -595,7 +595,7 @@ function buildBetBlock(round, name, players) {
   } else if (isApproved) {
     submitArea = `<div class="block-locked-msg" style="color:#7ddeaa;">✅ הימור אושר — לא ניתן לשנות</div>`;
   } else if (isPending) {
-    submitArea = `<div class="block-locked-msg" style="color:var(--gold2);">⏳ הימור נשלח וממתין לאישור — לא ניתן לשלוח שוב</div>`;
+    submitArea = `<div class="block-locked-msg" style="color:var(--gold2);">⏳ הימור נשלח וממתין לאישור תשלום — לא ניתן לשלוח שוב</div>`;
   } else {
     submitArea = `<button class="block-submit-btn" onclick="submitRoundBet('${round.key}')">
          🎲 שלח הימור — ${round.label}
