@@ -30,12 +30,37 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .site-tagline{font-family:'IM Fell English',serif;font-style:italic;font-size:20px;color:var(--gold2);letter-spacing:1px;}
 .season-num{font-family:'Bebas Neue';font-size:56px;font-style:normal;color:#c0141a;line-height:0.85;vertical-align:middle;display:inline-block;letter-spacing:6px;-webkit-text-stroke:1.5px #e8c547;animation:seasonGlow 2.8s ease-in-out infinite;text-shadow:0 0 14px rgba(192,20,26,0.8),0 3px 0 #1a0000,2px 2px 0 #7a0a0d;}
 @keyframes seasonGlow{0%,100%{transform:scale(1);text-shadow:0 0 14px rgba(192,20,26,0.8),0 3px 0 #1a0000,2px 2px 0 #7a0a0d;}50%{transform:scale(1.1);text-shadow:0 0 32px rgba(220,30,20,1),0 3px 0 #1a0000,0 0 55px rgba(220,30,20,0.6),2px 2px 0 #7a0a0d;}}
-.dice-orn{margin:16px 0 0;display:flex;align-items:center;justify-content:center;gap:12px;color:var(--muted2);font-size:22px;}
+.dice-orn{margin:16px 0 0;display:flex;align-items:center;justify-content:center;gap:18px;}
 .dice-orn .line{flex:1;max-width:130px;height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);}
-.dice-orn span{animation:rollDice 8s ease-in-out infinite;display:inline-block;}
-.dice-orn span:nth-child(3){animation-delay:-2.5s;}
-.dice-orn span:nth-child(5){animation-delay:-5s;}
-@keyframes rollDice{0%,80%,100%{transform:rotate(0);}85%{transform:rotate(-20deg);}90%{transform:rotate(20deg);}95%{transform:rotate(-10deg);}}
+.dice-3d{width:44px;height:44px;perspective:120px;}
+.dice-3d-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;animation:spinDice 4s linear infinite;}
+@keyframes spinDice{from{transform:rotateX(-20deg) rotateY(0deg);}to{transform:rotateX(-20deg) rotateY(360deg);}}
+.dice-face{position:absolute;width:44px;height:44px;background:var(--cream);border:2px solid rgba(0,0,0,0.25);border-radius:6px;display:grid;place-items:center;font-size:0;}
+.dice-face::before,.dice-face::after,.dot{content:'';position:absolute;width:8px;height:8px;border-radius:50%;background:#1a1210;}
+.f-front {transform:translateZ(22px);}
+.f-back  {transform:rotateY(180deg) translateZ(22px);}
+.f-right {transform:rotateY(90deg)  translateZ(22px);}
+.f-left  {transform:rotateY(-90deg) translateZ(22px);}
+.f-top   {transform:rotateX(90deg)  translateZ(22px);}
+.f-bottom{transform:rotateX(-90deg) translateZ(22px);}
+/* face 1 — center dot */
+.f-front::before{top:50%;left:50%;transform:translate(-50%,-50%);}
+/* face 6 — two columns of 3 */
+.f-back::before{top:10px;left:10px;}.f-back::after{top:10px;right:10px;}
+.f-back .d1{top:50%;left:10px;transform:translateY(-50%);}.f-back .d2{top:50%;right:10px;transform:translateY(-50%);}
+.f-back .d3{bottom:10px;left:10px;}.f-back .d4{bottom:10px;right:10px;}
+/* face 3 — diagonal */
+.f-right::before{top:10px;left:10px;}.f-right::after{bottom:10px;right:10px;}
+.f-right .d1{top:50%;left:50%;transform:translate(-50%,-50%);}
+/* face 4 — corners */
+.f-left::before{top:10px;left:10px;}.f-left::after{top:10px;right:10px;}
+.f-left .d1{bottom:10px;left:10px;}.f-left .d2{bottom:10px;right:10px;}
+/* face 2 */
+.f-top::before{top:12px;left:50%;transform:translateX(-50%);}.f-top::after{bottom:12px;left:50%;transform:translateX(-50%);}
+/* face 5 */
+.f-bottom::before{top:10px;left:10px;}.f-bottom::after{top:10px;right:10px;}
+.f-bottom .d1{top:50%;left:50%;transform:translate(-50%,-50%);}
+.f-bottom .d2{bottom:10px;left:10px;}.f-bottom .d3{bottom:10px;right:10px;}
 
 /* ── NAV ── */
 .nav-bar{display:flex;justify-content:center;padding:0 20px;border-bottom:1px solid var(--border2);position:sticky;top:0;background:rgba(13,11,10,0.97);backdrop-filter:blur(10px);z-index:200;gap:0;}
@@ -263,7 +288,14 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   <p class="site-tagline"><span class="season-num">III</span></p>
   <div class="dice-orn">
     <div class="line"></div>
-    <span>🎲</span><span>🎲</span><span>🎲</span>
+    <div class="dice-3d"><div class="dice-3d-inner">
+      <div class="dice-face f-front"></div>
+      <div class="dice-face f-back"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="dot d4"></span></div>
+      <div class="dice-face f-right"><span class="dot d1"></span></div>
+      <div class="dice-face f-left"><span class="dot d1"></span><span class="dot d2"></span></div>
+      <div class="dice-face f-top"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span></div>
+      <div class="dice-face f-bottom"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span></div>
+    </div></div>
     <div class="line"></div>
   </div>
 </header>
