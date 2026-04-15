@@ -461,10 +461,18 @@ const ROUNDS = [
 // ═══════════════════════════════════════════
 // STORAGE
 // ═══════════════════════════════════════════
-// ── SERVER-BACKED STORAGE ──
+// ── STORAGE: מקומי + שרת ──
+// מקומי (localStorage): שם + טיוטות אישיות
+// שרת (DB): נתוני טורניר, הימורים, תוצאות
 const API_URL = 'https://guykats.com/simor-bets/api.php';
 let _data = {};
 let _syncTimer = null;
+
+// מפתחות שנשארים רק על המכשיר האישי
+const isLocalKey = k => k === 'myName' || k.startsWith('draft_');
+
+const _lget = () => { try { return JSON.parse(localStorage.getItem('ssb4_local') || '{}'); } catch { return {}; } };
+const _lset = d => localStorage.setItem('ssb4_local', JSON.stringify(d));
 
 async function loadData() {
   try {
@@ -488,8 +496,17 @@ function scheduleSync() {
 
 const gd = () => _data;
 const sd = d => { _data = d; scheduleSync(); };
-const get = (k, def = null) => _data[k] !== undefined ? _data[k] : def;
-const set = (k, v) => { _data[k] = v; scheduleSync(); };
+
+const get = (k, def = null) => {
+  if (isLocalKey(k)) { const d = _lget(); return d[k] !== undefined ? d[k] : def; }
+  return _data[k] !== undefined ? _data[k] : def;
+};
+
+const set = (k, v) => {
+  if (isLocalKey(k)) { const d = _lget(); d[k] = v; _lset(d); return; }
+  _data[k] = v;
+  scheduleSync();
+};
 
 // ═══════════════════════════════════════════
 // UTILS
@@ -1137,6 +1154,7 @@ function resetAll() {
   if (!confirm('למחוק הכל? פעולה בלתי הפיכה!')) return;
   _data = {};
   scheduleSync();
+  localStorage.removeItem('ssb4_local');
   toast('✅ הכל נמחק');
   renderAdmin(); renderBets();
 }
