@@ -9,13 +9,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-$host   = 'localhost';
-$dbname = 'u823311221_simor_bets';
-$user   = 'u823311221_simor_bets';
-$pass   = 'Simor_bets123!';
+require_once __DIR__ . '/config.php';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $pass, [
+    $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     ]);
     $pdo->exec("CREATE TABLE IF NOT EXISTS ssb4_store (
