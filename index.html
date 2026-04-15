@@ -76,7 +76,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .champ-grid{display:flex;flex-wrap:wrap;gap:9px;}
 .champ-card{background:var(--ink3);border:1px solid var(--border2);border-radius:9px;padding:10px 16px;cursor:pointer;transition:all 0.2s;font-size:16px;font-weight:600;}
 .champ-card:hover{border-color:var(--gold2);transform:translateY(-2px);}
-.champ-card.selected{border-color:var(--gold3);background:rgba(184,134,11,0.12);color:var(--gold3);}
+.champ-card.selected{border-color:var(--gold3);background:rgba(184,134,11,0.35);color:var(--gold3);box-shadow:0 0 10px rgba(212,160,23,0.3);font-weight:700;}
 .champ-card.disabled{opacity:0.35;cursor:not-allowed;transform:none!important;}
 
 /* Match cards grid */
@@ -85,7 +85,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .match-num{font-family:'Bebas Neue';font-size:11px;letter-spacing:2px;color:var(--gold2);margin-bottom:8px;}
 .match-player{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border-radius:7px;background:rgba(13,11,10,0.6);border:1px solid transparent;cursor:pointer;transition:all 0.18s;font-size:17px;color:var(--cream);}
 .match-player:hover:not(.sel):not(.lost){border-color:var(--muted2);}
-.match-player.sel{background:rgba(45,106,79,0.15);border-color:var(--green2);color:#7ddeaa;}
+.match-player.sel{background:rgba(45,106,79,0.4);border-color:var(--green2);color:#7ddeaa;box-shadow:0 0 8px rgba(64,145,108,0.3);font-weight:700;}
 .match-player.lost{opacity:0.35;text-decoration:line-through;}
 .match-player .badge{font-family:'Bebas Neue';font-size:11px;letter-spacing:1px;color:var(--green2);background:rgba(64,145,108,0.15);padding:2px 7px;border-radius:4px;}
 .match-player.disabled{cursor:not-allowed;}
