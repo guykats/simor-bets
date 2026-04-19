@@ -780,26 +780,27 @@ function calcScore(name) {
   const finw = get('final_winner', '');
   let score = 0, correct = 0;
 
-  // Use final_bets_* as source of truth (approved_rounds_* can be corrupted as [])
   const hasFinal = k => get('final_bets_' + name + '_' + k, null) !== null;
+  const toArr = v => Array.isArray(v) ? v : Object.values(v || {});
 
   if (hasFinal('champion')) {
     const b = get('final_bets_' + name + '_champion', null);
     if (b && b === finw) { score += 15; correct++; }
   }
   const roundMap = [
-    { key:'r16', winners:r16w },
-    { key:'qf',  winners:qfw  },
-    { key:'sf',  winners:sfw  },
+    { key:'r16', winners: toArr(r16w) },
+    { key:'qf',  winners: toArr(qfw)  },
+    { key:'sf',  winners: toArr(sfw)  },
   ];
   roundMap.forEach(({ key, winners }) => {
     if (!hasFinal(key)) return;
     const bets = get('final_bets_' + name + '_' + key, {});
-    winners.forEach((w, i) => { if (w && bets[i] === w) { score += 1; correct++; } });
+    winners.forEach((w, i) => { if (w && (Array.isArray(bets) ? bets[i] : bets[i] ?? bets[String(i)]) === w) { score += 1; correct++; } });
   });
   if (hasFinal('final')) {
     const bets = get('final_bets_' + name + '_final', {});
-    if (finw && bets[0] === finw) { score += 1; correct++; }
+    const winner = Array.isArray(bets) ? bets[0] : (bets[0] ?? bets['0']);
+    if (finw && winner === finw) { score += 1; correct++; }
   }
   return { score, correct };
 }
