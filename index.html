@@ -1158,20 +1158,37 @@ function saveRes(rk) {
 
 // ── Pending approval ──
 function renderPending() {
-  const all = get('all_bettors', []);
   const pEl = document.getElementById('pending-list');
   const aEl = document.getElementById('approved-list');
 
-  // Build pending items: a bettor+round pair
+  // Derive full name list from both all_bettors and final_bets_* keys
+  const fromFinal = [...new Set(
+    Object.keys(_data)
+      .filter(k => k.startsWith('final_bets_'))
+      .map(k => {
+        const noPrefix = k.replace('final_bets_', '');
+        const suffix = ROUNDS.map(r => '_' + r.key).find(s => noPrefix.endsWith(s));
+        return suffix ? noPrefix.slice(0, -suffix.length) : null;
+      })
+      .filter(Boolean)
+  )];
+  const fromPending = [...new Set(
+    Object.keys(_data)
+      .filter(k => k.startsWith('pending_rounds_'))
+      .map(k => k.replace('pending_rounds_', ''))
+      .filter(Boolean)
+  )];
+  const allNames = [...new Set([...get('all_bettors', []), ...fromFinal, ...fromPending])];
+
   const pendingItems = [];
   const approvedItems = [];
 
-  all.forEach(name => {
-    const pending  = getRounds('pending_rounds_' + name);
-    const approved = getRounds('approved_rounds_' + name);
+  allNames.forEach(name => {
+    const pending = getRounds('pending_rounds_' + name);
     ROUNDS.forEach(r => {
-      if (pending[r.key])  pendingItems.push({ name, round: r });
-      if (approved[r.key]) approvedItems.push({ name, round: r });
+      if (pending[r.key]) pendingItems.push({ name, round: r });
+      // approved = has final_bets entry AND not pending
+      else if (get('final_bets_' + name + '_' + r.key, null) !== null) approvedItems.push({ name, round: r });
     });
   });
 
