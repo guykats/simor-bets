@@ -838,28 +838,38 @@ function showAdminTab(tab, btn) {
 
 function renderHistory() {
   const el = document.getElementById('history-list');
-  const all = get('all_bettors', []);
-  if (!all.length) { el.innerHTML = '<div style="color:var(--muted);font-style:italic;">אין הימורים מאושרים עדיין</div>'; return; }
 
-  const matchupLabel = (rk, i) => {
-    const mu = rk === 'final' ? [get('final_matchup', [])] : get(rk + '_matchups', []);
-    const m = mu[i];
-    return m ? `${m[0] || '?'} נגד ${m[1] || '?'}` : `משחק ${i + 1}`;
-  };
+  // גזור שמות מתוך מפתחות final_bets_* בDB
+  const names = [...new Set(
+    Object.keys(_data)
+      .filter(k => k.startsWith('final_bets_'))
+      .map(k => {
+        const noPrefix = k.replace('final_bets_', '');
+        const suffix = ROUNDS.map(r => '_' + r.key).find(s => noPrefix.endsWith(s));
+        return suffix ? noPrefix.slice(0, -suffix.length) : null;
+      })
+      .filter(Boolean)
+  )].sort();
 
-  el.innerHTML = all.map(name => {
-    const approved = get('approved_rounds_' + name, {});
-    const rows = ROUNDS.filter(r => approved[r.key]).map(r => {
+  if (!names.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-style:italic;">אין הימורים מאושרים עדיין</div>';
+    return;
+  }
+
+  el.innerHTML = names.map(name => {
+    const rows = ROUNDS.map(r => {
+      const betData = get('final_bets_' + name + '_' + r.key, null);
+      if (betData === null) return null;
       let detail = '';
       if (r.type === 'champion') {
-        const b = get('submitted_' + name + '_' + r.key, null) || get('submitted_' + name + '_champion', null);
-        detail = b ? `🏆 <strong>${b}</strong>` : '—';
+        const finw = get('final_winner', '');
+        const icon = finw ? (finw === betData ? '✅' : '❌') : '⏳';
+        detail = `${icon} <strong>${betData}</strong>`;
       } else {
-        const bets = get('submitted_' + name + '_' + r.key, {});
         const mu = r.key === 'final' ? (get('final_matchup',[]).length?[get('final_matchup',[])]:[]) : get(r.key+'_matchups',[]);
         const winners = r.key === 'final' ? [get('final_winner','')] : get(r.key+'_winners',[]);
         detail = mu.map((m, i) => {
-          const pick = bets[i];
+          const pick = betData[i];
           if (!pick) return null;
           const correct = winners[i] && winners[i] === pick;
           const wrong   = winners[i] && winners[i] !== pick;
@@ -871,9 +881,9 @@ function renderHistory() {
         <td style="padding:8px 12px;font-family:'Bebas Neue';letter-spacing:1px;color:var(--gold2);white-space:nowrap;">${r.icon} ${r.label}</td>
         <td style="padding:8px 12px;font-size:14px;color:var(--cream);">${detail}</td>
       </tr>`;
-    }).join('');
+    }).filter(Boolean).join('');
 
-    if (!rows.length) return '';
+    if (!rows.length) return null;
     return `<div style="margin-bottom:20px;background:rgba(13,11,10,0.7);border:1px solid var(--border2);border-radius:12px;overflow:hidden;">
       <div style="padding:12px 16px;background:rgba(184,134,11,0.08);border-bottom:1px solid var(--border2);font-family:'Playfair Display';font-size:17px;font-weight:700;">${name}</div>
       <table style="width:100%;border-collapse:collapse;">${rows}</table>
