@@ -785,24 +785,24 @@ function calcScore(name) {
   const hasFinal = k => get('final_bets_' + name + '_' + k, null) !== null;
   const toArr = v => Array.isArray(v) ? v : Object.values(v || {});
 
+  // Set-based: a point for each bet pick that appears among the actual winners
+  const countHits = (bets, winners) => {
+    const ws = new Set(toArr(winners).filter(Boolean));
+    return toArr(bets).filter(b => b && ws.has(b)).length;
+  };
+
   if (hasFinal('champion')) {
     const b = get('final_bets_' + name + '_champion', null);
     if (b && b === finw) { score += 15; correct++; }
   }
-  const roundMap = [
-    { key:'r16', winners: toArr(r16w) },
-    { key:'qf',  winners: toArr(qfw)  },
-    { key:'sf',  winners: toArr(sfw)  },
-  ];
-  roundMap.forEach(({ key, winners }) => {
+  [{ key:'r16', w: r16w }, { key:'qf', w: qfw }, { key:'sf', w: sfw }].forEach(({ key, w }) => {
     if (!hasFinal(key)) return;
-    const bets = get('final_bets_' + name + '_' + key, {});
-    winners.forEach((w, i) => { if (w && (Array.isArray(bets) ? bets[i] : bets[i] ?? bets[String(i)]) === w) { score += 1; correct++; } });
+    const hits = countHits(get('final_bets_' + name + '_' + key, {}), w);
+    score += hits; correct += hits;
   });
   if (hasFinal('final')) {
-    const bets = get('final_bets_' + name + '_final', {});
-    const winner = Array.isArray(bets) ? bets[0] : (bets[0] ?? bets['0']);
-    if (finw && winner === finw) { score += 1; correct++; }
+    const bets = toArr(get('final_bets_' + name + '_final', {}));
+    if (finw && bets[0] === finw) { score += 1; correct++; }
   }
   return { score, correct };
 }
