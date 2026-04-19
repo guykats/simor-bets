@@ -873,12 +873,12 @@ function renderHistory() {
       </tr>`;
     }).join('');
 
-    if (!rows) return '';
+    if (!rows.length) return '';
     return `<div style="margin-bottom:20px;background:rgba(13,11,10,0.7);border:1px solid var(--border2);border-radius:12px;overflow:hidden;">
       <div style="padding:12px 16px;background:rgba(184,134,11,0.08);border-bottom:1px solid var(--border2);font-family:'Playfair Display';font-size:17px;font-weight:700;">${name}</div>
       <table style="width:100%;border-collapse:collapse;">${rows}</table>
     </div>`;
-  }).join('') || '<div style="color:var(--muted);font-style:italic;">אין הימורים מאושרים עדיין</div>';
+  }).filter(Boolean).join('') || '<div style="color:var(--muted);font-style:italic;">אין הימורים מאושרים עדיין</div>';
 }
 
 async function checkPw() {
