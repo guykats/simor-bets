@@ -618,6 +618,8 @@ function buildBetBlock(round, name, players) {
   } else if (isPending) {
     const payLink = round.key === 'r16'
       ? 'https://links.payboxapp.com/TvWjfZ1Dm2b'
+      : round.key === 'qf'
+      ? 'https://links.payboxapp.com/WGKk2SMlt2b'
       : 'https://links.payboxapp.com/Ymo49JFDm2b';
     submitArea = `<div class="block-locked-msg" style="color:var(--gold2);">⏳ הימור נשלח וממתין לאישור תשלום — לא ניתן לשלוח שוב<br><a href="${payLink}" target="_blank" style="color:var(--gold3);font-family:'Bebas Neue';letter-spacing:2px;font-size:16px;text-decoration:underline;">💳 לתשלום לחץ כאן</a></div>`;
   } else {
