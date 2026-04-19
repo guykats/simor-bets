@@ -489,6 +489,9 @@ const set = (k, v) => {
   scheduleSync();
 };
 
+// מחזיר תמיד אובייקט (מתקן מקרים שנשמרו כ-[] במקום {})
+const getRounds = k => { const v = get(k, {}); return (v && !Array.isArray(v) && typeof v === 'object') ? v : {}; };
+
 // ═══════════════════════════════════════════
 // UTILS
 // ═══════════════════════════════════════════
@@ -538,8 +541,8 @@ function renderBets() {
 
 function buildBetBlock(round, name, players) {
   const locked  = isRoundLocked(round.key);
-  const approvedRounds = get('approved_rounds_' + name, {});
-  const pendingRounds  = get('pending_rounds_' + name, {});
+  const approvedRounds = getRounds('approved_rounds_' + name);
+  const pendingRounds  = getRounds('pending_rounds_' + name);
   const isApproved = approvedRounds[round.key];
   const isPending  = pendingRounds[round.key];
 
@@ -659,8 +662,8 @@ function submitRoundBet(rk) {
   if (isRoundLocked(rk)) { toast('הימור נעול!', true); return; }
   const name = (get('myName', '')).trim();
   if (!name) { toast('הכנס שם קודם!', true); return; }
-  if (get('pending_rounds_' + name, {})[rk])  { toast('כבר שלחת הימור זה — ממתין לאישור', true); return; }
-  if (get('approved_rounds_' + name, {})[rk]) { toast('הימור זה כבר אושר — לא ניתן לשנות', true); return; }
+  if (getRounds('pending_rounds_' + name)[rk])  { toast('כבר שלחת הימור זה — ממתין לאישור', true); return; }
+  if (getRounds('approved_rounds_' + name)[rk]) { toast('הימור זה כבר אושר — לא ניתן לשנות', true); return; }
 
   // ── וידוא שכל השדות נבחרו ──
   if (rk === 'champion') {
@@ -680,8 +683,8 @@ function submitRoundBet(rk) {
   }
 
   // Move this round to pending
-  const pendingRounds = get('pending_rounds_' + name, {});
-  const approvedRounds = get('approved_rounds_' + name, {});
+  const pendingRounds = getRounds('pending_rounds_' + name);
+  const approvedRounds = getRounds('approved_rounds_' + name);
   pendingRounds[rk] = true;
   delete approvedRounds[rk];
   set('pending_rounds_' + name, pendingRounds);
@@ -771,15 +774,17 @@ function renderBracket() {
 // SCORES
 // ═══════════════════════════════════════════
 function calcScore(name) {
-  const approvedRounds = get('approved_rounds_' + name, {});
   const r16w = get('r16_winners', []);
   const qfw  = get('qf_winners', []);
   const sfw  = get('sf_winners', []);
   const finw = get('final_winner', '');
   let score = 0, correct = 0;
 
-  if (approvedRounds.champion) {
-    const b = get('submitted_' + name + '_champion', null);
+  // Use final_bets_* as source of truth (approved_rounds_* can be corrupted as [])
+  const hasFinal = k => get('final_bets_' + name + '_' + k, null) !== null;
+
+  if (hasFinal('champion')) {
+    const b = get('final_bets_' + name + '_champion', null);
     if (b && b === finw) { score += 15; correct++; }
   }
   const roundMap = [
@@ -788,12 +793,12 @@ function calcScore(name) {
     { key:'sf',  winners:sfw  },
   ];
   roundMap.forEach(({ key, winners }) => {
-    if (!approvedRounds[key]) return;
-    const bets = get('submitted_' + name + '_' + key, {});
+    if (!hasFinal(key)) return;
+    const bets = get('final_bets_' + name + '_' + key, {});
     winners.forEach((w, i) => { if (w && bets[i] === w) { score += 1; correct++; } });
   });
-  if (approvedRounds.final) {
-    const bets = get('submitted_' + name + '_final', {});
+  if (hasFinal('final')) {
+    const bets = get('final_bets_' + name + '_final', {});
     if (finw && bets[0] === finw) { score += 1; correct++; }
   }
   return { score, correct };
@@ -1149,8 +1154,8 @@ function renderPending() {
   const approvedItems = [];
 
   all.forEach(name => {
-    const pending  = get('pending_rounds_' + name, {});
-    const approved = get('approved_rounds_' + name, {});
+    const pending  = getRounds('pending_rounds_' + name);
+    const approved = getRounds('approved_rounds_' + name);
     ROUNDS.forEach(r => {
       if (pending[r.key])  pendingItems.push({ name, round: r });
       if (approved[r.key]) approvedItems.push({ name, round: r });
@@ -1195,8 +1200,8 @@ function renderPending() {
 }
 
 function approveBet(name, rk) {
-  const pending  = get('pending_rounds_' + name, {});
-  const approved = get('approved_rounds_' + name, {});
+  const pending  = getRounds('pending_rounds_' + name);
+  const approved = getRounds('approved_rounds_' + name);
   delete pending[rk]; approved[rk] = true;
   set('pending_rounds_' + name, pending);
   set('approved_rounds_' + name, approved);
@@ -1209,7 +1214,7 @@ function approveBet(name, rk) {
 }
 
 function rejectBet(name, rk) {
-  const pending = get('pending_rounds_' + name, {});
+  const pending = getRounds('pending_rounds_' + name);
   delete pending[rk];
   set('pending_rounds_' + name, pending);
   toast(`❌ הימור "${ROUNDS.find(r=>r.key===rk)?.label}" של ${name} נדחה`);
@@ -1217,8 +1222,8 @@ function rejectBet(name, rk) {
 }
 
 function revokeApproval(name, rk) {
-  const approved = get('approved_rounds_' + name, {});
-  const pending  = get('pending_rounds_' + name, {});
+  const approved = getRounds('approved_rounds_' + name);
+  const pending  = getRounds('pending_rounds_' + name);
   delete approved[rk]; pending[rk] = true;
   set('approved_rounds_' + name, approved);
   set('pending_rounds_' + name, pending);
