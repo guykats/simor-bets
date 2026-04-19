@@ -805,7 +805,20 @@ function calcScore(name) {
 }
 
 function renderScores() {
-  const all = get('all_bettors', []);
+  let all = get('all_bettors', []);
+  // Fallback: derive from final_bets_* keys if all_bettors is empty
+  if (!all.length) {
+    all = [...new Set(
+      Object.keys(_data)
+        .filter(k => k.startsWith('final_bets_'))
+        .map(k => {
+          const noPrefix = k.replace('final_bets_', '');
+          const suffix = ROUNDS.map(r => '_' + r.key).find(s => noPrefix.endsWith(s));
+          return suffix ? noPrefix.slice(0, -suffix.length) : null;
+        })
+        .filter(Boolean)
+    )].sort();
+  }
   if (!all.length) {
     document.getElementById('lb-empty').style.display = 'block';
     document.getElementById('lb-table').style.display = 'none';
