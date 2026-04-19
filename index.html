@@ -781,11 +781,10 @@ function calcScore(name) {
   const sfw  = get('sf_winners', []);
   const finw = get('final_winner', '');
   let score = 0, correct = 0;
+  const perRound = {};
 
   const hasFinal = k => get('final_bets_' + name + '_' + k, null) !== null;
   const toArr = v => Array.isArray(v) ? v : Object.values(v || {});
-
-  // Set-based: a point for each bet pick that appears among the actual winners
   const countHits = (bets, winners) => {
     const ws = new Set(toArr(winners).filter(Boolean));
     return toArr(bets).filter(b => b && ws.has(b)).length;
@@ -793,18 +792,20 @@ function calcScore(name) {
 
   if (hasFinal('champion')) {
     const b = get('final_bets_' + name + '_champion', null);
-    if (b && b === finw) { score += 15; correct++; }
+    const pts = (b && b === finw) ? 15 : 0;
+    perRound.champion = pts; score += pts; if (pts) correct++;
   }
   [{ key:'r16', w: r16w }, { key:'qf', w: qfw }, { key:'sf', w: sfw }].forEach(({ key, w }) => {
     if (!hasFinal(key)) return;
     const hits = countHits(get('final_bets_' + name + '_' + key, {}), w);
-    score += hits; correct += hits;
+    perRound[key] = hits; score += hits; correct += hits;
   });
   if (hasFinal('final')) {
     const bets = toArr(get('final_bets_' + name + '_final', {}));
-    if (finw && bets[0] === finw) { score += 1; correct++; }
+    const pts = (finw && bets[0] === finw) ? 1 : 0;
+    perRound.final = pts; score += pts; if (pts) correct++;
   }
-  return { score, correct };
+  return { score, correct, perRound };
 }
 
 function renderScores() {
@@ -830,6 +831,22 @@ function renderScores() {
   document.getElementById('lb-empty').style.display = 'none';
   document.getElementById('lb-table').style.display = 'table';
 
+  const toArr = v => Array.isArray(v) ? v : Object.values(v || {});
+  const finw = get('final_winner', '');
+  const activeRounds = ROUNDS.filter(r => {
+    if (r.key === 'r16') return toArr(get('r16_winners', [])).some(Boolean);
+    if (r.key === 'qf')  return toArr(get('qf_winners',  [])).some(Boolean);
+    if (r.key === 'sf')  return toArr(get('sf_winners',   [])).some(Boolean);
+    if (r.key === 'final' || r.key === 'champion') return !!finw;
+    return false;
+  });
+
+  document.querySelector('#lb-table thead').innerHTML = `<tr>
+    <th>#</th><th>שם</th>
+    ${activeRounds.map(r => `<th title="${r.label}">${r.icon} ${r.label}</th>`).join('')}
+    <th>סה"כ</th>
+  </tr>`;
+
   const rows = all.map(n => ({ name: n, ...calcScore(n) }))
     .sort((a, b) => b.score - a.score || b.correct - a.correct);
   const mx = rows[0]?.score || 1;
@@ -837,12 +854,15 @@ function renderScores() {
   document.getElementById('lb-body').innerHTML = rows.map((r, i) => `
     <tr class="${i === 0 ? 'r1' : ''}">
       <td><span class="rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</span></td>
-      <td style="font-size:19px;font-weight:600;">${r.name}</td>
+      <td style="font-size:17px;font-weight:600;">${r.name}</td>
+      ${activeRounds.map(round => {
+        const v = r.perRound[round.key];
+        return `<td style="text-align:center;color:${v ? 'var(--gold3)' : 'var(--muted)'};">${v !== undefined ? v : '—'}</td>`;
+      }).join('')}
       <td><div class="score-bw">
         <strong style="font-family:'Bebas Neue';font-size:22px;min-width:36px;">${r.score}</strong>
-        <div class="score-bar" style="width:${Math.round((r.score/mx)*160)}px"></div>
+        <div class="score-bar" style="width:${Math.round((r.score/mx)*120)}px"></div>
       </div></td>
-      <td style="color:var(--muted2);">${r.correct}</td>
     </tr>`).join('');
 }
 
