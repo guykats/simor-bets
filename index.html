@@ -504,7 +504,7 @@ function showPage(p, btn) {
   document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
   document.getElementById('page-' + p).classList.add('active');
   if (btn) btn.classList.add('active');
-  const map = { bets: renderBets, bracket: renderBracket, scores: renderScores, admin: renderAdmin };
+  const map = { bets: renderBets, bracket: renderBracket, scores: renderScores, admin: tryAutoAdmin };
   map[p] && map[p]();
 }
 
@@ -891,6 +891,12 @@ function renderHistory() {
   }).filter(Boolean).join('') || '<div style="color:var(--muted);font-style:italic;">אין הימורים מאושרים עדיין</div>';
 }
 
+function unlockAdmin() {
+  document.getElementById('admin-lock').style.display = 'none';
+  document.getElementById('admin-body').style.display = 'block';
+  renderAdmin();
+}
+
 async function checkPw() {
   const pw = document.getElementById('admin-pw').value;
   try {
@@ -901,15 +907,18 @@ async function checkPw() {
     });
     const data = await res.json();
     if (data.ok) {
-      document.getElementById('admin-lock').style.display = 'none';
-      document.getElementById('admin-body').style.display = 'block';
-      renderAdmin();
+      localStorage.setItem('ssb4_admin', '1');
+      unlockAdmin();
     } else {
       toast('סיסמה שגויה!', true);
     }
   } catch {
     toast('שגיאת חיבור לשרת!', true);
   }
+}
+
+function tryAutoAdmin() {
+  if (localStorage.getItem('ssb4_admin') === '1') unlockAdmin();
 }
 
 function renderAdmin() {
