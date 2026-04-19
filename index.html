@@ -1219,13 +1219,23 @@ function renderPending() {
   if (!approvedItems.length) {
     aEl.innerHTML = '<div style="color:var(--muted);font-style:italic;">אין הימורים מאושרים</div>';
   } else {
-    aEl.innerHTML = approvedItems.map(({ name, round: r }) => `
-      <div class="pitem">
+    aEl.innerHTML = approvedItems.map(({ name, round: r }) => {
+      let betDesc = '';
+      if (r.type === 'champion') {
+        const b = get('final_bets_' + name + '_champion', null);
+        betDesc = b ? `🏆 <strong>${b}</strong>` : '<em>לא נבחר</em>';
+      } else {
+        const bets = get('final_bets_' + name + '_' + r.key, {});
+        betDesc = Object.entries(bets).filter(([,v])=>v).map(([i,v])=>`מ${+i+1}:<strong>${v}</strong>`).join(' | ') || '<em>אין בחירות</em>';
+      }
+      return `<div class="pitem">
         <div class="piname">✅ ${name} — ${r.icon} ${r.label}</div>
+        <div class="pibets">${betDesc}</div>
         <div class="piacts">
           <button class="abtn danger sm" onclick="revokeApproval('${name}','${r.key}')">↩️ בטל אישור</button>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   }
 }
 
