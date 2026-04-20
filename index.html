@@ -56,10 +56,14 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .bettor-bar input:focus{border-color:var(--gold2);}
 
 /* ── BET BLOCK (one per bet type) ── */
-.bet-block{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:22px 22px 18px;margin-bottom:20px;position:relative;}
-.bet-block-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.bet-block{background:var(--surface);border:1px solid var(--border2);border-radius:16px;margin-bottom:14px;position:relative;overflow:hidden;}
+.bet-block-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;user-select:none;gap:10px;flex-wrap:wrap;}
+.bet-block-header:hover{background:rgba(255,255,255,0.02);}
+.bet-block-chevron{font-size:12px;color:var(--muted);transition:transform 0.25s;margin-right:auto;}
+.bet-block.collapsed .bet-block-chevron{transform:rotate(-180deg);}
 .bet-block-title{font-family:'Bebas Neue';font-size:17px;letter-spacing:2px;color:var(--gold2);}
 .bet-block-status{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.bet-block-body{padding:0 22px 18px;}
 
 /* Lock pill */
 .lock-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:12px;font-family:'Bebas Neue';font-size:12px;letter-spacing:1px;white-space:nowrap;}
@@ -629,14 +633,21 @@ function buildBetBlock(round, name, players) {
   }
 
   return `
-    <div class="bet-block" id="block-${round.key}">
-      <div class="bet-block-header">
+    <div class="bet-block${locked ? ' collapsed' : ''}" id="block-${round.key}">
+      <div class="bet-block-header" onclick="toggleBetBlock('${round.key}')">
         <span class="bet-block-title">${round.icon} ${round.label} <span style="color:var(--muted2);font-size:12px;letter-spacing:1px;">(${round.pts} נק׳)</span></span>
         <div class="bet-block-status">${lockPill}${statusPill}</div>
+        <span class="bet-block-chevron">▲</span>
       </div>
-      ${inner}
-      ${submitArea}
+      <div class="bet-block-body">
+        ${inner}
+        ${submitArea}
+      </div>
     </div>`;
+}
+
+function toggleBetBlock(key) {
+  document.getElementById('block-' + key)?.classList.toggle('collapsed');
 }
 
 function toggleChampion(p) {
