@@ -633,8 +633,10 @@ function buildBetBlock(round, name, players) {
        </button>`;
   }
 
+  const startCollapsed = locked && !isApproved && !isPending;
+
   return `
-    <div class="bet-block${locked ? ' collapsed' : ''}" id="block-${round.key}">
+    <div class="bet-block${startCollapsed ? ' collapsed' : ''}" id="block-${round.key}">
       <div class="bet-block-header" onclick="toggleBetBlock('${round.key}')">
         <span class="bet-block-title">${round.icon} ${round.label} <span style="color:var(--muted2);font-size:12px;letter-spacing:1px;">(${round.pts} נק׳)</span></span>
         <div class="bet-block-status">${lockPill}${statusPill}</div>
