@@ -2,3 +2,9 @@
     Order allow,deny
     Deny from all
 </Files>
+
+<IfModule mod_authz_core.c>
+    <Directory "backups">
+        Require all denied
+    </Directory>
+</IfModule>

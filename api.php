@@ -58,6 +58,16 @@ if ($action === 'checkAdmin') {
 // ── SET ALL ──
 } elseif ($action === 'setAll') {
     $data = $body['data'] ?? [];
+
+    // Safety: refuse to replace many rows with very few (catches accidental wipes)
+    $currentCount = (int)$pdo->query("SELECT COUNT(*) FROM ssb4_store")->fetchColumn();
+    $newCount = count($data);
+    if ($currentCount > 5 && $newCount < intval($currentCount * 0.4)) {
+        http_response_code(409);
+        echo json_encode(['error' => "Refusing: would replace {$currentCount} rows with {$newCount}"]);
+        exit;
+    }
+
     $pdo->beginTransaction();
     try {
         $pdo->exec("DELETE FROM ssb4_store");
@@ -74,6 +84,33 @@ if ($action === 'checkAdmin') {
         http_response_code(500);
         echo json_encode(['error' => 'Write failed: ' . $e->getMessage()]);
     }
+
+// ── BACKUP (called by cron) ──
+} elseif ($action === 'backup') {
+    $pw = $body['pw'] ?? $_GET['pw'] ?? '';
+    if (!$pw || !password_verify($pw, ADMIN_PW_HASH)) {
+        http_response_code(401);
+        echo json_encode(['error' => 'unauthorized']);
+        exit;
+    }
+    $rows = $pdo->query("SELECT k, v FROM ssb4_store")->fetchAll(PDO::FETCH_ASSOC);
+    $out  = new stdClass();
+    foreach ($rows as $row) {
+        $key       = $row['k'];
+        $out->$key = json_decode($row['v'], true);
+    }
+    $json    = json_encode($out, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    $dir     = __DIR__ . '/backups';
+    if (!is_dir($dir)) mkdir($dir, 0755, true);
+    $filename = $dir . '/backup_' . date('Y-m-d_H-i-s') . '.json';
+    file_put_contents($filename, $json);
+
+    // Keep only last 30 backups
+    $files = glob($dir . '/backup_*.json');
+    usort($files, fn($a,$b) => strcmp($b,$a));
+    foreach (array_slice($files, 30) as $old) unlink($old);
+
+    echo json_encode(['ok' => true, 'file' => basename($filename), 'rows' => count($rows)]);
 
 } else {
     http_response_code(400);
