@@ -470,6 +470,8 @@ async function loadData() {
 function scheduleSync() {
   clearTimeout(_syncTimer);
   _syncTimer = setTimeout(async () => {
+    // Safety: never sync if _data is suspiciously empty (load may have failed)
+    if (Object.keys(_data).length === 0) return;
     try {
       await fetch(API_URL, {
         method: 'POST',
