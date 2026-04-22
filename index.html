@@ -1306,25 +1306,6 @@ function revokeApproval(name, rk) {
 }
 
 // ── Danger zone ──
-function resetAll() {
-  if (!confirm('למחוק הכל? פעולה בלתי הפיכה!')) return;
-  _data = {};
-  scheduleSync();
-  localStorage.removeItem('ssb4_local');
-  toast('✅ הכל נמחק');
-  renderAdmin(); renderBets();
-}
-function resetBets() {
-  if (!confirm('למחוק את כל ההימורים?')) return;
-  const d = gd();
-  Object.keys(d).forEach(k => {
-    if (k.startsWith('bets_') || k.startsWith('draft_') || k.startsWith('submitted_') ||
-        k.startsWith('pending_rounds') || k.startsWith('approved_rounds') || k.startsWith('final_bets_')) delete d[k];
-  });
-  d.all_bettors = []; sd(d);
-  toast('✅ הימורים נמחקו'); renderAdmin(); renderBets();
-}
-
 // ═══════════════════════════════════════════
 // INIT — pre-load players if not already set
 // ═══════════════════════════════════════════
